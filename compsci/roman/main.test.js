@@ -29,6 +29,6 @@ test.each([
   [1023, "MXXIII"],
   [2014, "MMXIV"],
   [3999, "MMMCMXCIX"],
-])("palindrome(%d)", (n, expected) => {
+])("convertToRoman(%d)", (n, expected) => {
   expect(convertToRoman(n)).toBe(expected);
 });
