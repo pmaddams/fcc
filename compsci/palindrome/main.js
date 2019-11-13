@@ -13,11 +13,9 @@ export function palindrome(s) {
 
 export function isalnum(s) {
   for (const c of s) {
-    const n = c.charCodeAt(0);
-    const numeric = n >= 48 && n <= 57;
-    const uppercase = n >= 65 && n <= 90;
-    const lowercase = n >= 97 && n <= 122;
-    if (!(numeric || lowercase || uppercase)) {
+    if (!(c >= "0" && c <= "9" ||
+          c >= "A" && c <= "Z" ||
+          c >= "a" && c <= "z")) {
       return false;
     }
   }
