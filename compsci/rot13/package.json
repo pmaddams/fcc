@@ -1,4 +1,9 @@
 {
+  "babel": {
+    "presets": [
+      "@babel/preset-env"
+    ]
+  },
   "dependencies": {
     "@babel/core": "latest",
     "@babel/preset-env": "latest",
