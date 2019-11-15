@@ -1,6 +1,17 @@
 {
+  "babel": {
+    "presets": [
+      "@babel/preset-env"
+    ]
+  },
+  "dependencies": {
+    "@babel/core": "latest",
+    "@babel/preset-env": "latest",
+    "jest": "latest"
+  },
   "scripts": {
-    "start": "node --experimental-modules main.js"
+    "start": "node --experimental-modules main.js",
+    "test": "jest"
   },
   "type": "module"
 }
