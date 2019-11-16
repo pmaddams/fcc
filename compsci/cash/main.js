@@ -22,8 +22,8 @@ export function checkCashRegister(price, cash, cid) {
   if (avail < needed) {
     return insufficient();
   }
-  const change = [];
-  for (let [amount, denom] of zip(cid, [10000, 2000, 1000, 500, 100, 25, 10, 5, 1])) {
+  let change = [];
+  for (let [denom, amount] of zip([10000, 2000, 1000, 500, 100, 25, 10, 5, 1], cid)) {
     let n = 0;
     while (needed >= denom && amount >= denom) {
       n += denom;
@@ -41,7 +41,7 @@ export function checkCashRegister(price, cash, cid) {
       change[5] -= 25;
       change[6] += 30;
       needed -= 5;
-      // Take back any extra pennies.
+      // Remove any extra pennies.
       while (needed < 0) {
         change[8]--;
         needed++;
@@ -50,12 +50,15 @@ export function checkCashRegister(price, cash, cid) {
       return insufficient();
     }
   }
-  return {
-    status: sum(change) === avail ? "CLOSED" : "OPEN",
-    // Convert cents to dollars and reverse the change array to the original order.
-    change: zip(["PENNY", "NICKEL", "DIME", "QUARTER", "DOLLAR", "FIVE", "TEN", "TWENTY", "HUNDRED"],
-                change.map(n => 0.01*n).reverse())
-  };
+  const status = sum(change) === avail ? "CLOSED" : "OPEN";
+  change = zip(["ONE HUNDRED", "TWENTY", "TEN", "FIVE", "ONE", "QUARTER", "DIME", "NICKEL", "PENNY"],
+               change.map(n => 0.01*n));
+  if (status === "CLOSED") {
+    change.reverse();
+  } else {
+    change = change.filter(p => p[1] !== 0);
+  }
+  return {status, change};
 }
 
 export function zip(a1, a2) {
