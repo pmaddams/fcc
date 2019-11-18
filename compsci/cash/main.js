@@ -1,11 +1,40 @@
 import readline from "readline";
+import { promisify } from "util";
 
 function main() {
-  readline.createInterface({
-    input: process.stdin
-  }).on("line", s => {
-    console.log("");
-  });
+  collect(readline.createInterface({
+    input: process.stdin,
+    output: process.stdout
+  })).then(val => {
+    console.log(checkCashRegister.apply(null, val));
+  }).finally(process.exit);
+}
+
+async function collect(rl) {
+  const ask = promisify((prompt, f) =>
+    rl.question(prompt, answer => {
+      const n = parseFloat(answer);
+      return f(null, n >= 0 ? n : 0);
+    })
+  );
+
+  const val = [];
+  val.push(await ask("price: "));
+  val.push(await ask("cash: "));
+
+  const cid = [];
+  cid.push(["PENNY", await ask("pennies: ")]);
+  cid.push(["NICKEL", await ask("nickels: ")]);
+  cid.push(["DIME", await ask("dimes: ")]);
+  cid.push(["QUARTER", await ask("quarters: ")]);
+  cid.push(["ONE", await ask("ones: ")]);
+  cid.push(["FIVE", await ask("fives: ")]);
+  cid.push(["TEN", await ask("tens: ")]);
+  cid.push(["TWENTY", await ask("twenties: ")]);
+  cid.push(["ONE HUNDRED", await ask("hundreds: ")]);
+  val.push(cid);
+
+  return val;
 }
 
 export function checkCashRegister(price, cash, cid) {
