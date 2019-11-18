@@ -38,21 +38,17 @@ async function collect(rl) {
 }
 
 export function checkCashRegister(price, cash, cid) {
-  // Convert dollars to cents and treat cid as an array of numbers in reverse order.
-  price = Math.round(100*price);
-  cash = Math.round(100*cash);
-  cid = cid.map(p => Math.round(100*p[1])).reverse();
-
-  let needed = cash - price;
+  let needed = Math.round(100*(cash - price));
   if (needed < 0) {
     return insufficient();
   }
-  const avail = sum(cid);
-  if (avail < needed) {
+  const avail = cid.map(p => Math.round(100*p[1])).reverse();
+  const total = sum(avail);
+  if (total < needed) {
     return insufficient();
   }
-  let change = [];
-  for (let [denom, amount] of zip([10000, 2000, 1000, 500, 100, 25, 10, 5, 1], cid)) {
+  const change = [];
+  for (let [denom, amount] of zip([10000, 2000, 1000, 500, 100, 25, 10, 5, 1], avail)) {
     let n = 0;
     while (needed >= denom && amount >= denom) {
       n += denom;
@@ -65,7 +61,7 @@ export function checkCashRegister(price, cash, cid) {
     // Handle case where greedy selection of quarters instead of dimes fails.
     if (needed <= 5 &&
         change[5] >= 25 &&
-        cid[6] - change[6] >= 30) {
+        avail[6] - change[6] >= 30) {
       // Replace a quarter with three dimes.
       change[5] -= 25;
       change[6] += 30;
@@ -79,15 +75,14 @@ export function checkCashRegister(price, cash, cid) {
       return insufficient();
     }
   }
-  const status = sum(change) === avail ? "CLOSED" : "OPEN";
-  change = zip(["ONE HUNDRED", "TWENTY", "TEN", "FIVE", "ONE", "QUARTER", "DIME", "NICKEL", "PENNY"],
-               change.map(n => 0.01*n));
-  if (status === "CLOSED") {
-    change.reverse();
-  } else {
-    change = change.filter(p => p[1] !== 0);
+  return sum(change) === total ? {
+    status: "CLOSED",
+    change: cid
+  } : {
+    status: "OPEN",
+    change: zip(["ONE HUNDRED", "TWENTY", "TEN", "FIVE", "ONE", "QUARTER", "DIME", "NICKEL", "PENNY"],
+              change.map(n => 0.01*n)).filter(p => p[1] !== 0)
   }
-  return {status, change};
 }
 
 export function zip(a1, a2) {
