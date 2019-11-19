@@ -11,27 +11,31 @@ function main() {
 }
 
 async function collect(rl) {
-  const ask = promisify((prompt, f) =>
-    rl.question(prompt, answer => {
-      const n = parseFloat(answer);
+  const input = promisify((prompt, f) =>
+    rl.question(prompt, s => {
+      const n = parseFloat(s);
       return f(null, n >= 0 ? n : 0);
     })
   );
 
   const val = [];
-  val.push(await ask("price: "));
-  val.push(await ask("cash: "));
+  val.push(await input("price: "));
+  val.push(await input("cash: "));
 
   const cid = [];
-  cid.push(["PENNY", await ask("pennies: ")]);
-  cid.push(["NICKEL", await ask("nickels: ")]);
-  cid.push(["DIME", await ask("dimes: ")]);
-  cid.push(["QUARTER", await ask("quarters: ")]);
-  cid.push(["ONE", await ask("ones: ")]);
-  cid.push(["FIVE", await ask("fives: ")]);
-  cid.push(["TEN", await ask("tens: ")]);
-  cid.push(["TWENTY", await ask("twenties: ")]);
-  cid.push(["ONE HUNDRED", await ask("hundreds: ")]);
+  for (const [s, prompt] of [
+    ["PENNY", "pennies"],
+    ["NICKEL", "nickels"],
+    ["DIME", "dimes"],
+    ["QUARTER", "quarters"],
+    ["ONE", "ones"],
+    ["FIVE", "fives"],
+    ["TEN", "tens"],
+    ["TWENTY", "twenties"],
+    ["ONE HUNDRED", "hundreds"]
+  ]) {
+    cid.push([s, await input(`${prompt}: `)]);
+  }
   val.push(cid);
 
   return val;
