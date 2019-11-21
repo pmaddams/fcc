@@ -3,9 +3,9 @@ import readline from "readline";
 function main() {
   readline.createInterface({
     input: process.stdin
-  }).on("line", s => {
-    console.log(rot13(s));
-  });
+  }).on("line", s =>
+    console.log(rot13(s))
+  );
 }
 
 export function rot13(s) {

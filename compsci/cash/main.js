@@ -5,9 +5,9 @@ function main() {
   collect(readline.createInterface({
     input: process.stdin,
     output: process.stdout
-  })).then(val => {
-    console.log(checkCashRegister.apply(null, val));
-  }).finally(process.exit);
+  })).then(val =>
+    console.log(checkCashRegister.apply(null, val))
+  ).finally(process.exit);
 }
 
 async function collect(rl) {

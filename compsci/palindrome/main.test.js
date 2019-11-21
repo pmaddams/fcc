@@ -16,9 +16,9 @@ test.each([
   ["1 eye for of 1 eye.", false],
   ["0_0 (: /-\ :) 0-0", true],
   ["five|\_/|four", false],
-])("palindrome(\"%s\")", (s, expected) => {
-  expect(palindrome(s)).toBe(expected);
-});
+])("palindrome(\"%s\")", (s, expected) =>
+  expect(palindrome(s)).toBe(expected)
+);
 
 test.each([
   ["", true],
@@ -26,6 +26,6 @@ test.each([
   ["abc123", true],
   ["abc,123", false],
   ["AaBbCc", true],
-])("isalnum(\"%s\")", (s, expected) => {
-  expect(isalnum(s)).toBe(expected);
-});
+])("isalnum(\"%s\")", (s, expected) =>
+  expect(isalnum(s)).toBe(expected)
+);

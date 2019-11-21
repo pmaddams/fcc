@@ -3,9 +3,9 @@ import readline from "readline";
 function main() {
   readline.createInterface({
     input: process.stdin
-  }).on("line", s => {
-    console.log(telephoneCheck(s));
-  });
+  }).on("line", s =>
+    console.log(telephoneCheck(s))
+  );
 }
 
 export function telephoneCheck(s) {
