@@ -11,6 +11,8 @@ function main() {
   const param = "date";
   app.get(`/api/timestamp/:${param}?`, makeHandler(param));
 
+  app.use((err, req, res, next) => res.sendStatus(500));
+
   const server = app.listen(process.env.PORT || 3000, () => {
     const ip = server.address();
     console.log(`Running at ${ip.address}:${ip.port}`);
@@ -34,7 +36,7 @@ export function makeHandler(param) {
 }
 
 export function timestamp(s) {
-  return s ? Date.now() : Date.parse(s);
+  return s ? Date.parse(s) : Date.now();
 }
 
 if (process.env.NODE_ENV !== "test") {
