@@ -3,19 +3,28 @@ import express from "express";
 import helmet from "helmet";
 
 function main() {
+  const app = createServer();
+
+  const param = "date";
+  app.get(`/api/timestamp/:${param}?`, makeHandler(param));
+
+  app.listen(process.env.PORT || 3000);
+}
+
+function createServer() {
   const app = express();
 
   app.use(helmet());
   app.use(compression());
 
-  const param = "date";
-  app.get(`/api/timestamp/:${param}?`, makeHandler(param));
+  return new Proxy(app, {
+    get(target, prop) {
+      return prop === "listen" ? (port) => {
+        target.use((err, req, res, next) => res.sendStatus(500));
 
-  app.use((err, req, res, next) => res.sendStatus(500));
-
-  const server = app.listen(process.env.PORT || 3000, () => {
-    const ip = server.address();
-    console.log(`Running at ${ip.address}:${ip.port}`);
+        target.listen(port, () => console.log(`Listening on port ${port}`));
+      } : target[prop];
+    }
   });
 }
 
