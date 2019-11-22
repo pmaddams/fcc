@@ -22,7 +22,7 @@ function createServer() {
       prop === "listen" ? (port) => {
         target.use((err, req, res, next) => res.sendStatus(500));
 
-        target.listen(port, () => console.log(`Listening on port ${port}`));
+        return target.listen(port, () => console.log(`Listening on port ${port}`));
       } : target[prop]
   });
 }
