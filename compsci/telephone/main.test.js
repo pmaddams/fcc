@@ -31,7 +31,7 @@ test.each([
   ["555)-555-5555", false],
   ["(555-555-5555", false],
   ["(555)5(55?)-5555", false]
-])("telephoneCheck(\"%s\")", (s, expected) =>
+])("telephoneCheck(%p)", (s, expected) =>
   expect(telephoneCheck(s)).toBe(expected)
 );
 
@@ -41,7 +41,7 @@ test.each([
   ["2345678901", true],
   ["234-567-8901", true],
   ["(234)-567-8901", false]
-])("match(\"%s\")", (s, expected) =>
+])("match(%p)", (s, expected) =>
   expect(match(s)).toBe(expected)
 );
 
@@ -51,6 +51,6 @@ test.each([
   ["234 567 8901", "2345678901"],
   ["  23 4\t- 567-89  0 1 ", "234-567-8901"],
   ["1(234)-567-8901", "(234)-567-8901"]
-])("clean(\"%s\")", (s, expected) =>
+])("clean(%p)", (s, expected) =>
   expect(clean(s)).toBe(expected)
 );

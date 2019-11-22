@@ -29,6 +29,6 @@ test.each([
   [1023, "MXXIII"],
   [2014, "MMXIV"],
   [3999, "MMMCMXCIX"],
-])("convertToRoman(%d)", (n, expected) =>
+])("convertToRoman(%p)", (n, expected) =>
   expect(convertToRoman(n)).toBe(expected)
 );

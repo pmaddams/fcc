@@ -141,7 +141,7 @@ test.each([
      ]
    }
   ],
-])("checkCashRegister(%d, %d, %p)", (price, cash, cid, expected) =>
+])("checkCashRegister(%p, %p, %p)", (price, cash, cid, expected) =>
   expect(checkCashRegister(price, cash, cid)).toStrictEqual(expected)
 );
 

@@ -10,7 +10,7 @@ test.each([
   ["SERR YBIR?", "FREE LOVE?"],
   ["GUR DHVPX OEBJA SBK WHZCF BIRE GUR YNML QBT.",
    "THE QUICK BROWN FOX JUMPS OVER THE LAZY DOG."]
-])("rot13(\"%s\")", (s, expected) =>
+])("rot13(%p)", (s, expected) =>
   expect(rot13(s)).toBe(expected)
 );
 
@@ -23,7 +23,7 @@ test.each([
   ["M", 13, "Z"],
   ["Z", 13, "M"],
   ["?", 10, "?"]
-])("rotateChar(\"%s\", %d)", (c, n, expected) =>
+])("rotateChar(%p, %p)", (c, n, expected) =>
   expect(rotateChar(c, n)).toBe(expected)
 );
 
@@ -35,6 +35,6 @@ test.each([
   [1, 53, 2],
   [12, 13, 25],
   [25, 13, 12]
-])("rotateIndex(%d, %d)", (i, n, expected) =>
+])("rotateIndex(%p, %p)", (i, n, expected) =>
   expect(rotateIndex(i, n)).toBe(expected)
 );
