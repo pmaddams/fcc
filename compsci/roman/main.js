@@ -1,11 +1,11 @@
 import readline from "readline";
 
 function main() {
-  readline.createInterface({
-    input: process.stdin
-  }).on("line", s =>
-    console.log(convertToRoman(parseInt(s)))
-  );
+  readline
+    .createInterface({
+      input: process.stdin
+    })
+    .on("line", s => console.log(convertToRoman(parseInt(s))));
 }
 
 export function convertToRoman(n) {

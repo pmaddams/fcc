@@ -2,12 +2,14 @@ import readline from "readline";
 import { promisify } from "util";
 
 function main() {
-  collect(readline.createInterface({
-    input: process.stdin,
-    output: process.stdout
-  })).then(val =>
-    console.log(checkCashRegister.apply(null, val))
-  ).finally(process.exit);
+  collect(
+    readline.createInterface({
+      input: process.stdin,
+      output: process.stdout
+    })
+  )
+    .then(val => console.log(checkCashRegister.apply(null, val)))
+    .finally(process.exit);
 }
 
 async function collect(rl) {
@@ -42,17 +44,20 @@ async function collect(rl) {
 }
 
 export function checkCashRegister(price, cash, cid) {
-  let needed = Math.round(100*(cash - price));
+  let needed = Math.round(100 * (cash - price));
   if (needed < 0) {
     return insufficient();
   }
-  const avail = cid.map(p => Math.round(100*p[1])).reverse();
+  const avail = cid.map(p => Math.round(100 * p[1])).reverse();
   const total = sum(avail);
   if (total < needed) {
     return insufficient();
   }
   const change = [];
-  for (let [denom, amount] of zip([10000, 2000, 1000, 500, 100, 25, 10, 5, 1], avail)) {
+  for (let [denom, amount] of zip(
+    [10000, 2000, 1000, 500, 100, 25, 10, 5, 1],
+    avail
+  )) {
     let n = 0;
     while (needed >= denom && amount >= denom) {
       n += denom;
@@ -63,9 +68,7 @@ export function checkCashRegister(price, cash, cid) {
   }
   if (needed > 0) {
     // Handle case where greedy selection of quarters instead of dimes fails.
-    if (needed <= 5 &&
-        change[5] >= 25 &&
-        avail[6] - change[6] >= 30) {
+    if (needed <= 5 && change[5] >= 25 && avail[6] - change[6] >= 30) {
       // Replace a quarter with three dimes.
       change[5] -= 25;
       change[6] += 30;
@@ -79,14 +82,28 @@ export function checkCashRegister(price, cash, cid) {
       return insufficient();
     }
   }
-  return sum(change) === total ? {
-    status: "CLOSED",
-    change: cid
-  } : {
-    status: "OPEN",
-    change: zip(["ONE HUNDRED", "TWENTY", "TEN", "FIVE", "ONE", "QUARTER", "DIME", "NICKEL", "PENNY"],
-              change.map(n => 0.01*n)).filter(p => p[1] !== 0)
-  }
+  return sum(change) === total
+    ? {
+        status: "CLOSED",
+        change: cid
+      }
+    : {
+        status: "OPEN",
+        change: zip(
+          [
+            "ONE HUNDRED",
+            "TWENTY",
+            "TEN",
+            "FIVE",
+            "ONE",
+            "QUARTER",
+            "DIME",
+            "NICKEL",
+            "PENNY"
+          ],
+          change.map(n => 0.01 * n)
+        ).filter(p => p[1] !== 0)
+      };
 }
 
 export function zip(a1, a2) {

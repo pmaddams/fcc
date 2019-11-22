@@ -1,8 +1,4 @@
-import {
-  telephoneCheck,
-  match,
-  clean
-} from "./main.js";
+import { telephoneCheck, match, clean } from "./main.js";
 
 test.each([
   ["1 555-555-5555", true],
@@ -41,9 +37,7 @@ test.each([
   ["2345678901", true],
   ["234-567-8901", true],
   ["(234)-567-8901", false]
-])("match(%p)", (s, expected) =>
-  expect(match(s)).toBe(expected)
-);
+])("match(%p)", (s, expected) => expect(match(s)).toBe(expected));
 
 test.each([
   ["+1 (234) 567-8901", "(234)567-8901"],
@@ -51,6 +45,4 @@ test.each([
   ["234 567 8901", "2345678901"],
   ["  23 4\t- 567-89  0 1 ", "234-567-8901"],
   ["1(234)-567-8901", "(234)-567-8901"]
-])("clean(%p)", (s, expected) =>
-  expect(clean(s)).toBe(expected)
-);
+])("clean(%p)", (s, expected) => expect(clean(s)).toBe(expected));

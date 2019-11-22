@@ -1,15 +1,17 @@
 import readline from "readline";
 
 function main() {
-  readline.createInterface({
-    input: process.stdin
-  }).on("line", s =>
-    console.log(rot13(s))
-  );
+  readline
+    .createInterface({
+      input: process.stdin
+    })
+    .on("line", s => console.log(rot13(s)));
 }
 
 export function rot13(s) {
-  return Array.from(s).map(c => rotateChar(c, 13)).join("");
+  return Array.from(s)
+    .map(c => rotateChar(c, 13))
+    .join("");
 }
 
 export function rotateChar(c, n) {

@@ -1,6 +1,4 @@
-import {
-  convertToRoman
-} from "./main.js";
+import { convertToRoman } from "./main.js";
 
 test.each([
   [2, "II"],
@@ -28,7 +26,7 @@ test.each([
   [1006, "MVI"],
   [1023, "MXXIII"],
   [2014, "MMXIV"],
-  [3999, "MMMCMXCIX"],
+  [3999, "MMMCMXCIX"]
 ])("convertToRoman(%p)", (n, expected) =>
   expect(convertToRoman(n)).toBe(expected)
 );

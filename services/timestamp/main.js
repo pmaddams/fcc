@@ -19,11 +19,15 @@ function createServer() {
 
   return new Proxy(app, {
     get: (target, prop) =>
-      prop === "listen" ? (port) => {
-        target.use((err, req, res, next) => res.sendStatus(500));
+      prop === "listen"
+        ? port => {
+            target.use((err, req, res, next) => res.sendStatus(500));
 
-        return target.listen(port, () => console.log(`Listening on port ${port}`));
-      } : target[prop]
+            return target.listen(port, () =>
+              console.log(`Listening on port ${port}`)
+            );
+          }
+        : target[prop]
   });
 }
 
@@ -40,14 +44,14 @@ function makeHandler(param) {
         utc: new Date(n).toUTCString()
       });
     }
-  }
+  };
 }
 
 export function timestamp(s) {
   let n;
   if (typeof s === "undefined") {
     n = Date.now();
-  } else if (isNaN(n = +s)) {
+  } else if (isNaN((n = +s))) {
     n = Date.parse(s);
   }
   return n;
