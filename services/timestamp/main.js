@@ -18,13 +18,12 @@ function createServer() {
   app.use(compression());
 
   return new Proxy(app, {
-    get(target, prop) {
-      return prop === "listen" ? (port) => {
+    get: (target, prop) =>
+      prop === "listen" ? (port) => {
         target.use((err, req, res, next) => res.sendStatus(500));
 
         target.listen(port, () => console.log(`Listening on port ${port}`));
-      } : target[prop];
-    }
+      } : target[prop]
   });
 }
 
