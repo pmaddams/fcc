@@ -27,7 +27,7 @@ function createServer() {
   });
 }
 
-export function makeHandler(param) {
+function makeHandler(param) {
   return (req, res) => {
     const n = timestamp(req.params[param]);
     if (isNaN(n)) {
@@ -44,7 +44,13 @@ export function makeHandler(param) {
 }
 
 export function timestamp(s) {
-  return s ? Date.parse(s) : Date.now();
+  let n;
+  if (typeof s === "undefined") {
+    n = Date.now();
+  } else if (isNaN(n = +s)) {
+    n = Date.parse(s);
+  }
+  return n;
 }
 
 if (process.env.NODE_ENV !== "test") {
