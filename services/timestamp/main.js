@@ -5,8 +5,19 @@ import helmet from "helmet";
 function main() {
   const app = createServer();
 
-  const param = "date";
-  app.get(`/api/timestamp/:${param}?`, makeHandler(param));
+  app.get("/api/timestamp/:date?", (req, res) => {
+    const n = timestamp(req.params.date);
+    if (isNaN(n)) {
+      res.status(400).json({
+        error: "Invalid Date"
+      });
+    } else {
+      res.json({
+        unix: n,
+        utc: new Date(n).toUTCString()
+      });
+    }
+  });
 
   app.listen(process.env.PORT || 3000);
 }
@@ -30,22 +41,6 @@ function createServer() {
           }
         : target[prop]
   });
-}
-
-function makeHandler(param) {
-  return (req, res) => {
-    const n = timestamp(req.params[param]);
-    if (isNaN(n)) {
-      res.status(400).json({
-        error: "Invalid Date"
-      });
-    } else {
-      res.json({
-        unix: n,
-        utc: new Date(n).toUTCString()
-      });
-    }
-  };
 }
 
 export function timestamp(s) {
