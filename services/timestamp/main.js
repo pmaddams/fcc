@@ -21,6 +21,7 @@ function createServer() {
     get: (target, prop) =>
       prop === "listen"
         ? port => {
+            target.use((req, res) => res.sendStatus(404));
             target.use((err, req, res, next) => res.sendStatus(500));
 
             return target.listen(port, () =>
