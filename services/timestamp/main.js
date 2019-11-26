@@ -22,6 +22,31 @@ function main() {
   app.listen(process.env.PORT || 3000);
 }
 
+export function createServer() {
+  const app = express();
+
+  app.use(helmet());
+  app.use(compression());
+
+  return new Proxy(app, {
+    get(target, prop) {
+      switch (prop) {
+        case "listen":
+          return port => {
+            target.use((req, res) => res.sendStatus(404));
+            target.use((err, req, res, next) => res.sendStatus(500));
+
+            return target.listen(port, () =>
+              console.log(`Listening on port ${port}`)
+            );
+          };
+        default:
+          return target[prop];
+      }
+    }
+  });
+}
+
 export function timestamp(s) {
   let n;
   if (typeof s === "undefined") {
@@ -30,29 +55,6 @@ export function timestamp(s) {
     n = Date.parse(s);
   }
   return n;
-}
-
-export function createServer() {
-  const app = express();
-
-  // Configure middleware.
-  app.use(helmet());
-  app.use(compression());
-
-  return new Proxy(app, {
-    get: (target, prop) =>
-      prop === "listen"
-        ? port => {
-            // Override default handlers.
-            target.use((req, res) => res.sendStatus(404));
-            target.use((err, req, res, next) => res.sendStatus(500));
-
-            return target.listen(port, () =>
-              console.log(`Listening on port ${port}`)
-            );
-          }
-        : target[prop]
-  });
 }
 
 if (process.env.NODE_ENV !== "test") {
