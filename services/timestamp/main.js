@@ -22,9 +22,20 @@ function main() {
   app.listen(process.env.PORT || 3000);
 }
 
-function createServer() {
+export function timestamp(s) {
+  let n;
+  if (typeof s === "undefined") {
+    n = Date.now();
+  } else if (isNaN((n = +s))) {
+    n = Date.parse(s);
+  }
+  return n;
+}
+
+export function createServer() {
   const app = express();
 
+  // Configure middleware.
   app.use(helmet());
   app.use(compression());
 
@@ -32,6 +43,7 @@ function createServer() {
     get: (target, prop) =>
       prop === "listen"
         ? port => {
+            // Override default handlers.
             target.use((req, res) => res.sendStatus(404));
             target.use((err, req, res, next) => res.sendStatus(500));
 
@@ -41,16 +53,6 @@ function createServer() {
           }
         : target[prop]
   });
-}
-
-export function timestamp(s) {
-  let n;
-  if (typeof s === "undefined") {
-    n = Date.now();
-  } else if (isNaN((n = +s))) {
-    n = Date.parse(s);
-  }
-  return n;
 }
 
 if (process.env.NODE_ENV !== "test") {
