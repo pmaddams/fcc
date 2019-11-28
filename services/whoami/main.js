@@ -28,7 +28,10 @@ export function createServer() {
         case "listen":
           return port => {
             target.use((req, res) => res.sendStatus(404));
-            target.use((err, req, res, next) => res.sendStatus(500));
+            target.use((err, req, res, next) => {
+              console.error(err);
+              res.sendStatus(500);
+            });
 
             return target.listen(port, () =>
               console.log(`Listening on port ${port}`)
