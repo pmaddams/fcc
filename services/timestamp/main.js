@@ -8,11 +8,11 @@ function main() {
   app.get("/api/timestamp/:date?", (req, res) => {
     const n = timestamp(req.params.date);
     if (isNaN(n)) {
-      res.status(400).json({
+      return res.status(400).json({
         error: "Invalid Date"
       });
     } else {
-      res.json({
+      return res.json({
         unix: n,
         utc: new Date(n).toUTCString()
       });
@@ -36,7 +36,7 @@ export function createServer() {
             target.use((req, res) => res.sendStatus(404));
             target.use((err, req, res, next) => {
               console.error(err);
-              res.sendStatus(500);
+              return res.sendStatus(500);
             });
 
             return target.listen(port, () =>
