@@ -8,7 +8,7 @@ function main() {
       output: process.stdout
     })
   )
-    .then(val => console.log(checkCashRegister.apply(null, val)))
+    .then(args => console.log(checkCashRegister(...args)))
     .finally(process.exit);
 }
 
@@ -20,9 +20,9 @@ async function collect(rl) {
     })
   );
 
-  const val = [];
-  val.push(await input("price: "));
-  val.push(await input("cash: "));
+  const args = [];
+  args.push(await input("price: "));
+  args.push(await input("cash: "));
 
   const cid = [];
   for (const [s, prompt] of [
@@ -38,9 +38,9 @@ async function collect(rl) {
   ]) {
     cid.push([s, await input(`${prompt}: `)]);
   }
-  val.push(cid);
+  args.push(cid);
 
-  return val;
+  return args;
 }
 
 export function checkCashRegister(price, cash, cid) {
