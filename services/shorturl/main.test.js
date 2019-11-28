@@ -11,7 +11,7 @@ describe("createServer()", () => {
 
     app.get("/", (req, res) => res.sendStatus(200));
     app.get("/error", (req, res) => {
-      throw Error("Secret");
+      throw new Error("Secret");
     });
 
     server = app.listen(port);
