@@ -7,16 +7,16 @@ function main() {
 
   app.get("/api/timestamp/:date?", (req, res) => {
     const n = timestamp(req.params.date);
-    if (isNaN(n)) {
-      return res.status(400).json({
-        error: "Invalid Date"
-      });
-    } else {
-      return res.json({
-        unix: n,
-        utc: new Date(n).toUTCString()
-      });
-    }
+    return res.json(
+      isNaN(n)
+        ? {
+            error: "Invalid Date"
+          }
+        : {
+            unix: n,
+            utc: new Date(n).toUTCString()
+          }
+    );
   });
 
   app.listen(process.env.PORT || 3000);
