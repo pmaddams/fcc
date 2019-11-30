@@ -7,19 +7,19 @@ import helmet from "helmet";
 import mongodb from "mongodb";
 import fetch from "node-fetch";
 
-const cache = namespace(() => new Map(), "users", "urls", "ids");
+const cache = constMap(() => new Map(), ["users", "urls", "ids"]);
 
-const errors = namespace(name => Symbol(name), "limit", "valid", "malware");
+const errors = constMap(s => Symbol(s), ["limit", "valid", "malware"]);
 
 function main() {
   const app = createServer();
 
-  app.post("/api/shorturl/new/:url", async (req, res) => {
+  app.post("/api/shorturl/new", async (req, res) => {
     try {
-      const id = await checkURL(req.params.url, req.ip);
+      const id = await checkURL(req.body.url, req.ip);
       return res.json({
-        original_url: req.params.url,
-        short_url: encode(id || (await setURL(req.params.url)))
+        original_url: req.body.url,
+        short_url: encode(id || (await setURL(req.body.url)))
       });
     } catch (err) {
       switch (err.type) {
@@ -36,6 +36,7 @@ function main() {
   app.get("/api/shorturl/:id", async (req, res) => {
     const n = decode(req.params.id);
     const s = cache.ids.get(n) || (await getURL(n));
+
     return s ? res.redirect(301, s) : res.sendStatus(404);
   });
 
@@ -71,8 +72,8 @@ export function createServer() {
 }
 
 class URLError extends Error {
-  constructor(type, ...args) {
-    super(...args);
+  constructor(type, message) {
+    super(message);
     this.type = type;
   }
 }
@@ -113,8 +114,8 @@ export function decode(s) {
   return parseInt(s, 36);
 }
 
-export function namespace(f, ...args) {
-  return Object.freeze(Object.fromEntries(args.map(x => [x, f(x)])));
+export function constMap(f, a) {
+  return Object.freeze(Object.fromEntries(a.map(x => [x, f(x)])));
 }
 
 if (process.env.NODE_ENV !== "test") {
