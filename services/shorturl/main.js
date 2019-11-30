@@ -81,7 +81,7 @@ async function checkURL(s, ip) {
   // ...
   cache.users.set(ip, checkLimit(cache.users.get(ip)));
   await checkValid(s);
-  await checkMalware;
+  await checkMalware(s);
 }
 
 export function checkLimit(
@@ -97,13 +97,13 @@ export function checkLimit(
   return history.slice(1, count);
 }
 
-function checkValid() {}
+export async function checkValid(s) {}
 
-function checkMalware() {}
+export async function checkMalware(s) {}
 
-function setURL(s) {}
+async function setURL(s) {}
 
-function getURL(n) {}
+async function getURL(n) {}
 
 export function encode(n) {
   return n.toString(36);
