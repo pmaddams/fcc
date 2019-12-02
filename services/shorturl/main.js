@@ -1,4 +1,4 @@
-import url from "url";
+import { URL } from "url";
 
 import compression from "compression";
 import express from "express";
@@ -7,9 +7,9 @@ import helmet from "helmet";
 import mongodb from "mongodb";
 import fetch from "node-fetch";
 
-const cache = constMap(() => new Map(), ["users", "urls", "ids"]);
-
-const errors = constMap(s => Symbol(s), ["limit", "valid", "malware"]);
+const cache = Object.fromEntries(
+  ["ids", "urls", "users"].map(s => [s, new Map()])
+);
 
 function main() {
   const app = createServer();
@@ -22,14 +22,10 @@ function main() {
         short_url: encode(id || (await setURL(req.body.url)))
       });
     } catch (err) {
-      switch (err.type) {
-        case errors.limit:
-        case errors.valid:
-        case errors.malware:
-          return res.json({ error: err.message });
-        default:
-          throw err;
+      if (err instanceof URLError) {
+        return res.json({ error: err.message });
       }
+      throw err;
     }
   });
 
@@ -72,9 +68,9 @@ export function createServer() {
 }
 
 class URLError extends Error {
-  constructor(type, message) {
-    super(message);
-    this.type = type;
+  constructor(...args) {
+    super(...args);
+    this.name = this.constructor.name;
   }
 }
 
@@ -92,13 +88,26 @@ export function checkLimit(
   interval = 60000
 ) {
   if (history.len >= count - 1 && now - history[0] < interval) {
-    throw new URLError(errors.limit, "limit exceeded");
+    throw new URLError("limit exceeded");
   }
   history.push(n);
   return history.slice(1, count);
 }
 
-export async function checkValid(s) {}
+export async function checkValid(s, ms = 1000) {
+  try {
+    new URL(s);
+  } catch (err) {
+    throw new URLError("invalid URL");
+  }
+  const timeout = setTimeout(() => {
+    throw new URLError("request timed out");
+  }, ms);
+  if (!(await fetch(s, { method: "HEAD" })).ok) {
+    throw new URLError("bad response");
+  }
+  clearTimeout(timeout);
+}
 
 export async function checkMalware(s) {}
 
@@ -112,10 +121,6 @@ export function encode(n) {
 
 export function decode(s) {
   return parseInt(s, 36);
-}
-
-export function constMap(f, a) {
-  return Object.freeze(Object.fromEntries(a.map(x => [x, f(x)])));
 }
 
 if (process.env.NODE_ENV !== "test") {
