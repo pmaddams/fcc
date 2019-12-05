@@ -2,7 +2,6 @@ import { URL } from "url";
 
 import compression from "compression";
 import express from "express";
-import googleapis from "googleapis";
 import helmet from "helmet";
 import mongodb from "mongodb";
 import fetch from "node-fetch";
@@ -16,10 +15,10 @@ function main() {
 
   app.post("/api/shorturl/new", async (req, res) => {
     try {
-      const id = await checkURL(req.body.url, req.ip);
+      const id = await setURL(req.body.url, req.ip);
       return res.json({
         original_url: req.body.url,
-        short_url: encode(id || (await setURL(req.body.url)))
+        short_url: encode(id)
       });
     } catch (err) {
       if (err instanceof URLError) {
@@ -30,10 +29,10 @@ function main() {
   });
 
   app.get("/api/shorturl/:id", async (req, res) => {
-    const n = decode(req.params.id);
-    const s = cache.ids.get(n) || (await getURL(n));
+    const id = decode(req.params.id);
+    const url = await getURL(id);
 
-    return s ? res.redirect(301, s) : res.sendStatus(404);
+    return url ? res.redirect(301, url) : res.sendStatus(404);
   });
 
   app.listen(process.env.PORT || 3000);
@@ -67,18 +66,37 @@ export function createServer() {
   });
 }
 
+async function setURL(url, ip) {
+  const id = cache.urls.get(url);
+  if (id) {
+    return id;
+  }
+  cache.users.set(ip, checkLimit(cache.users.get(ip)));
+  await checkInvalid(url);
+  await checkThreat(url);
+
+  // ...
+
+  cache.urls.set(url, id);
+  cache.ids.set(id, url);
+}
+
+async function getURL(id) {
+  const url = cache.ids.get(id);
+  if (url) {
+    return url;
+  }
+  // ...
+
+  cache.ids.set(id, url);
+  cache.urls.set(url, id);
+}
+
 class URLError extends Error {
   constructor(...args) {
     super(...args);
     this.name = this.constructor.name;
   }
-}
-
-async function checkURL(s, ip) {
-  // ...
-  cache.users.set(ip, checkLimit(cache.users.get(ip)));
-  await checkValid(s);
-  await checkMalware(s);
 }
 
 export function checkLimit(
@@ -94,26 +112,54 @@ export function checkLimit(
   return history.slice(1, count);
 }
 
-export async function checkValid(s, ms = 1000) {
+export async function checkInvalid(url, ms = 1000) {
   try {
-    new URL(s);
+    new URL(url);
   } catch (err) {
     throw new URLError("invalid URL");
   }
   const timeout = setTimeout(() => {
     throw new URLError("request timed out");
   }, ms);
-  if (!(await fetch(s, { method: "HEAD" })).ok) {
+  if (!(await fetch(url, { method: "HEAD" })).ok) {
     throw new URLError("bad response");
   }
   clearTimeout(timeout);
 }
 
-export async function checkMalware(s) {}
-
-async function setURL(s) {}
-
-async function getURL(n) {}
+export async function checkThreat(url) {
+  const res = await fetch(
+    `https://safebrowsing.googleapis.com/v4/threatMatches:find?key=${process.env.SAFEBROWSING}`,
+    {
+      body: JSON.stringify({
+        client: {
+          clientId: "pmaddams-shorturl",
+          clientVersion: "1.0"
+        },
+        threatInfo: {
+          threatTypes: [
+            "MALWARE",
+            "POTENTIALLY_HARMFUL_APPLICATION",
+            "SOCIAL_ENGINEERING",
+            "THREAT_TYPE_UNSPECIFIED",
+            "UNWANTED_SOFTWARE"
+          ],
+          platformTypes: ["ANY_PLATFORM"],
+          threatEntryTypes: ["URL"],
+          threatEntries: [{ url }]
+        }
+      }),
+      headers: { "Content-Type": "application/json" },
+      method: "POST"
+    }
+  );
+  if (!res.ok) {
+    throw new Error("failed to check Safe Browsing API");
+  }
+  if (Object.keys(await res.json()).length) {
+    throw new URLError("threat detected");
+  }
+}
 
 export function encode(n) {
   return n.toString(36);
