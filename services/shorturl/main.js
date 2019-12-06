@@ -29,8 +29,7 @@ function main() {
   });
 
   app.get("/api/shorturl/:id", async (req, res) => {
-    const id = decode(req.params.id);
-    const url = await getURL(id);
+    const url = await getURL(decode(req.params.id));
 
     return url ? res.redirect(301, url) : res.sendStatus(404);
   });
@@ -66,6 +65,26 @@ export function createServer() {
   });
 }
 
+export class DBClient extends mongodb.MongoClient {
+  #name;
+  constructor(
+    user = process.env.DB_USER,
+    pass = process.env.DB_PASS,
+    host = process.env.DB_HOST,
+    name = process.env.DB_NAME
+  ) {
+    super(
+      `mongodb+srv://${user}:${pass}@${host}/${name}?retryWrites=true&w=majority`,
+      { useNewUrlParser: true }
+    );
+    this.#name = name;
+  }
+
+  db() {
+    return super.db(this.#name);
+  }
+}
+
 async function setURL(url, ip) {
   const id = cache.urls.get(url);
   if (id) {
@@ -79,17 +98,6 @@ async function setURL(url, ip) {
 
   cache.urls.set(url, id);
   cache.ids.set(id, url);
-}
-
-async function getURL(id) {
-  const url = cache.ids.get(id);
-  if (url) {
-    return url;
-  }
-  // ...
-
-  cache.ids.set(id, url);
-  cache.urls.set(url, id);
 }
 
 class URLError extends Error {
@@ -159,6 +167,17 @@ export async function checkThreat(url) {
   if (Object.keys(await res.json()).length) {
     throw new URLError("threat detected");
   }
+}
+
+async function getURL(id) {
+  const url = cache.ids.get(id);
+  if (url) {
+    return url;
+  }
+  // ...
+
+  cache.ids.set(id, url);
+  cache.urls.set(url, id);
 }
 
 export function encode(n) {
