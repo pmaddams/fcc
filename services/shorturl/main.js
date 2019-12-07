@@ -160,7 +160,7 @@ export async function checkThreat(url) {
   if (!res.ok) {
     throw new Error("Safe Browsing API failed to respond");
   }
-  if (Object.keys(await res.json()).length) {
+  if (!isEmpty(await res.json())) {
     throw new URLError("threat detected");
   }
 }
@@ -182,6 +182,10 @@ export function encode(n) {
 
 export function decode(s) {
   return parseInt(s, 36);
+}
+
+export function isEmpty(obj) {
+  return Object.keys(obj).length === 0;
 }
 
 if (process.env.NODE_ENV !== "test") {
