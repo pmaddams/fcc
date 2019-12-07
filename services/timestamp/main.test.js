@@ -3,7 +3,7 @@ import fetch from "node-fetch";
 import { createServer, timestamp } from "./main.js";
 
 describe("createServer()", () => {
-  const port = process.env.PORT || 3000;
+  const port = 8080;
   let server;
 
   beforeAll(() => {

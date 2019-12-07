@@ -13,7 +13,7 @@ function main() {
     })
   );
 
-  app.listen(process.env.PORT || 3000);
+  app.listen(process.env.PORT);
 }
 
 export function createServer() {
@@ -26,7 +26,7 @@ export function createServer() {
     get(target, prop) {
       switch (prop) {
         case "listen":
-          return port => {
+          return (port = 3000) => {
             target.use((req, res) => res.sendStatus(404));
             target.use((err, req, res, next) => {
               console.error(err);
