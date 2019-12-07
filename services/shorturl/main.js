@@ -67,16 +67,8 @@ export function createServer() {
 
 export class DBClient extends mongodb.MongoClient {
   #name;
-  constructor(
-    user = process.env.DB_USER,
-    pass = process.env.DB_PASS,
-    host = process.env.DB_HOST,
-    name = process.env.DB_NAME
-  ) {
-    super(
-      `mongodb+srv://${user}:${pass}@${host}/${name}?retryWrites=true&w=majority`,
-      { useNewUrlParser: true }
-    );
+  constructor(url = "mongodb://localhost:27017", name = "test") {
+    super(url);
     this.#name = name;
   }
 
@@ -136,8 +128,12 @@ export async function checkInvalid(url, ms = 1000) {
 }
 
 export async function checkThreat(url) {
+  const key = process.env.SAFEBROWSING_API_KEY;
+  if (!key) {
+    throw new Error("Safe Browsing API key not found");
+  }
   const res = await fetch(
-    `https://safebrowsing.googleapis.com/v4/threatMatches:find?key=${process.env.SAFEBROWSING}`,
+    `https://safebrowsing.googleapis.com/v4/threatMatches:find?key=${key}`,
     {
       body: JSON.stringify({
         client: {
@@ -162,7 +158,7 @@ export async function checkThreat(url) {
     }
   );
   if (!res.ok) {
-    throw new Error("failed to check Safe Browsing API");
+    throw new Error("Safe Browsing API failed to respond");
   }
   if (Object.keys(await res.json()).length) {
     throw new URLError("threat detected");
