@@ -3,7 +3,7 @@ import { URL } from "url";
 import compression from "compression";
 import express from "express";
 import helmet from "helmet";
-import mongodb from "mongodb";
+import mongoose from "mongoose";
 import fetch from "node-fetch";
 
 const cache = Object.fromEntries(
@@ -63,18 +63,6 @@ export function createServer() {
       }
     }
   });
-}
-
-export class DBClient extends mongodb.MongoClient {
-  #name;
-  constructor(url = "mongodb://localhost:27017", name = "test") {
-    super(url);
-    this.#name = name;
-  }
-
-  db() {
-    return super.db(this.#name);
-  }
 }
 
 async function setURL(url, ip) {
