@@ -10,6 +10,33 @@ const cache = Object.fromEntries(
   ["ids", "urls", "users"].map(s => [s, new Map()])
 );
 
+const counterSchema = new mongoose.Schema(
+  {
+    id: {
+      type: Number,
+      default: 1,
+      required: true
+    }
+  },
+  {
+    capped: {
+      size: 4096,
+      max: 1
+    }
+  }
+);
+
+const shortURLSchema = new mongoose.Schema({
+  url: {
+    type: String,
+    required: true
+  },
+  id: {
+    type: Number,
+    required: true
+  }
+});
+
 function main() {
   const app = createServer();
 
@@ -66,7 +93,7 @@ export function createServer() {
 }
 
 async function setURL(url, ip) {
-  const id = cache.urls.get(url);
+  let id = cache.urls.get(url);
   if (id) {
     return id;
   }
@@ -74,10 +101,18 @@ async function setURL(url, ip) {
   await checkInvalid(url);
   await checkThreat(url);
 
-  // ...
+  const conn = await createConnection(process.env.MONGODB_URI);
+  const Counter = conn.model("Counter", counterSchema);
+  try {
+    await new Counter().save();
+  } catch (err) {}
+  ({ id } = await Counter.findOneAndUpdate({}, { $inc: { id: 1 } }));
+  const ShortURL = conn.model("ShortURL", shortURLSchema);
+  await new ShortURL({ url, id }).save();
+  conn.close();
 
   cache.urls.set(url, id);
-  cache.ids.set(id, url);
+  return id;
 }
 
 class URLError extends Error {
@@ -154,14 +189,17 @@ export async function checkThreat(url) {
 }
 
 async function getURL(id) {
-  const url = cache.ids.get(id);
+  let url = cache.ids.get(id);
   if (url) {
     return url;
   }
-  // ...
+  const conn = await createConnection(process.env.MONGODB_URI);
+  const ShortURL = conn.model("ShortURL", shortURLSchema);
+  ({ url } = await ShortURL.findOne({ id }));
+  conn.close();
 
   cache.ids.set(id, url);
-  cache.urls.set(url, id);
+  return url;
 }
 
 export function encode(n) {
@@ -174,6 +212,15 @@ export function decode(s) {
 
 export function isEmpty(obj) {
   return Object.keys(obj).length === 0;
+}
+
+export async function createConnection(url = "mongodb://localhost:27017") {
+  return await mongoose.createConnection(url, {
+    useCreateIndex: true,
+    useFindAndModify: false,
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+  });
 }
 
 if (process.env.NODE_ENV !== "test") {
