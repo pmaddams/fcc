@@ -16,7 +16,6 @@
     "express": "latest",
     "helmet": "latest",
     "jest": "latest",
-    "mongoose": "latest",
     "node-fetch": "latest"
   },
   "scripts": {
