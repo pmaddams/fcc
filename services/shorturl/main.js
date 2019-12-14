@@ -9,12 +9,14 @@ function main() {
   const app = createServer();
   const db = openDatabase(process.env.DB);
 
-  app.post("/api/shorturl/new", async (req, res) => {
+  app.post("/api/shorturl/new", (req, res) => {
     try {
-      return res.json({
-        original_url: req.body.url,
-        short_url: encode(await setURL(db, req.body.url))
-      });
+      return setURL(db, req.body.url, id =>
+        res.json({
+          original_url: req.body.url,
+          short_url: encode(id)
+        })
+      );
     } catch (err) {
       if (err instanceof URLError) {
         return res.json({ error: err.message });
@@ -23,11 +25,11 @@ function main() {
     }
   });
 
-  app.get("/api/shorturl/:id", async (req, res) => {
-    const url = await getURL(db, decode(req.params.id));
-
-    return url ? res.redirect(301, url) : res.sendStatus(404);
-  });
+  app.get("/api/shorturl/:id", (req, res) =>
+    getURL(db, decode(req.params.id), url =>
+      url ? res.redirect(301, url) : res.sendStatus(404)
+    )
+  );
 
   app.listen(process.env.PORT);
 }
@@ -75,7 +77,7 @@ class URLError extends Error {
   }
 }
 
-async function setURL(db, url) {
+function setURL(db, url, k) {
   try {
     new URL(url);
   } catch (err) {
@@ -83,7 +85,7 @@ async function setURL(db, url) {
   }
 }
 
-async function getURL(db, id) {}
+function getURL(db, id, k) {}
 
 export function encode(n) {
   return n.toString(36);
