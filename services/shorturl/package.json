@@ -16,7 +16,8 @@
     "express": "latest",
     "helmet": "latest",
     "jest": "latest",
-    "node-fetch": "latest"
+    "node-fetch": "latest",
+    "sqlite3": "latest"
   },
   "scripts": {
     "start": "node --experimental-modules main.js",
