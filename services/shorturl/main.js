@@ -10,9 +10,11 @@ function main() {
   const db = openDatabase(process.env.DB);
 
   app.post("/api/shorturl/new", (req, res) =>
-    setURL(db, req.body.url, (id, error) =>
+    setURL(db, req.body.url, (error, id) =>
       res.json(
-        id ? { original_url: req.body.url, short_url: encode(id) } : { error }
+        error
+          ? { error }
+          : { original_url: req.body.url, short_url: encode(id) }
       )
     )
   );
@@ -55,10 +57,14 @@ export function createServer() {
 }
 
 export function openDatabase(file = ":memory:") {
+  sqlite3.verbose();
   return new sqlite3.Database(file, err => {
     if (err) {
       throw err;
     }
+    console.log(`Opened database ${file}`);
+  }).on("error", err => {
+    throw err;
   });
 }
 
@@ -66,11 +72,25 @@ function setURL(db, url, k) {
   try {
     new URL(url);
   } catch (err) {
-    k(null, "invalid URL");
+    k("invalid URL");
   }
+  db.serialize(() =>
+    db
+      .run(
+        "CREATE TABLE IF NOT EXISTS shorturl (id INTEGER PRIMARY KEY NOT NULL, url TEXT UNIQUE NOT NULL)"
+      )
+      .run("INSERT OR IGNORE INTO shorturl (url) VALUES (?)", [url])
+      .get("SELECT id FROM shorturl WHERE url = ?", [url], (err, row) =>
+        k(null, row.id)
+      )
+  );
 }
 
-function getURL(db, id, k) {}
+function getURL(db, id, k) {
+  db.get("SELECT url FROM shorturl WHERE id = ?", [id], (err, row) =>
+    k(row ? row.url : null)
+  );
+}
 
 export function encode(n) {
   return n.toString(36);
