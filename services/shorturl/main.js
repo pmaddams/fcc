@@ -75,7 +75,7 @@ function setURL(db, url, k) {
   try {
     new URL(url);
   } catch (err) {
-    k("invalid URL");
+    return k("invalid URL");
   }
   db.serialize(() =>
     db
