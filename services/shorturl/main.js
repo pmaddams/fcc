@@ -9,6 +9,9 @@ function main() {
   const app = createServer();
   const db = openDatabase(process.env.DB);
 
+  app.use(express.urlencoded());
+  app.use(express.static("public"));
+
   app.post("/api/shorturl/new", (req, res) =>
     setURL(db, req.body.url, (error, id) =>
       res.json(
