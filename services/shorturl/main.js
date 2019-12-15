@@ -10,7 +10,6 @@ function main() {
   const db = openDatabase(process.env.DB);
 
   app.use(express.urlencoded());
-  app.use(express.static("public"));
 
   app.post("/api/shorturl/new", (req, res) =>
     setURL(db, req.body.url, (error, id) =>
@@ -27,6 +26,8 @@ function main() {
       url ? res.redirect(301, url) : res.sendStatus(404)
     )
   );
+
+  app.use(express.static("public"));
 
   app.listen(process.env.PORT);
 }
