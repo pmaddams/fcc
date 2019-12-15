@@ -9,21 +9,13 @@ function main() {
   const app = createServer();
   const db = openDatabase(process.env.DB);
 
-  app.post("/api/shorturl/new", (req, res) => {
-    try {
-      return setURL(db, req.body.url, id =>
-        res.json({
-          original_url: req.body.url,
-          short_url: encode(id)
-        })
-      );
-    } catch (err) {
-      if (err instanceof URLError) {
-        return res.json({ error: err.message });
-      }
-      throw err;
-    }
-  });
+  app.post("/api/shorturl/new", (req, res) =>
+    setURL(db, req.body.url, (id, error) =>
+      res.json(
+        id ? { original_url: req.body.url, short_url: encode(id) } : { error }
+      )
+    )
+  );
 
   app.get("/api/shorturl/:id", (req, res) =>
     getURL(db, decode(req.params.id), url =>
@@ -70,18 +62,11 @@ export function openDatabase(file = ":memory:") {
   });
 }
 
-class URLError extends Error {
-  constructor(...args) {
-    super(...args);
-    this.name = this.constructor.name;
-  }
-}
-
 function setURL(db, url, k) {
   try {
     new URL(url);
   } catch (err) {
-    throw new URLError("invalid URL");
+    k(null, "invalid URL");
   }
 }
 
