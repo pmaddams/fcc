@@ -62,14 +62,10 @@ export function createServer() {
 
 export function openDatabase(file = ":memory:") {
   sqlite3.verbose();
-  return new sqlite3.Database(file, err => {
-    if (err) {
-      throw err;
-    }
-    console.log(`Opened database ${file}`);
-  }).on("error", err => {
-    throw err;
-  });
+  const db = new sqlite3.Database(file);
+  console.log(`Opened database ${file}`);
+
+  return db;
 }
 
 function setURL(db, url, k) {
@@ -81,7 +77,7 @@ function setURL(db, url, k) {
   db.serialize(() =>
     db
       .run(
-        "CREATE TABLE IF NOT EXISTS shorturl (id INTEGER PRIMARY KEY NOT NULL, url TEXT UNIQUE NOT NULL)"
+        "CREATE TABLE IF NOT EXISTS shorturl (id INTEGER PRIMARY KEY, url TEXT UNIQUE NOT NULL)"
       )
       .run("INSERT OR IGNORE INTO shorturl (url) VALUES (?)", [url])
       .get("SELECT id FROM shorturl WHERE url = ?", [url], (err, row) =>

@@ -1,6 +1,6 @@
 import fetch from "node-fetch";
 
-import { createServer } from "./main.js";
+import { createServer, openDatabase, encode, decode } from "./main.js";
 
 describe("createServer()", () => {
   const port = 8080;
@@ -38,3 +38,35 @@ describe("createServer()", () => {
     expect(await res.text()).toBe("Internal Server Error");
   });
 });
+
+test("openDatabase()", () => {
+  const db = openDatabase(),
+    a = ["foo", "bar", "baz"];
+  db.serialize(() => {
+    db.run(
+      "CREATE TABLE test (id INTEGER PRIMARY KEY, s TEXT UNIQUE NOT NULL)"
+    );
+    let stmt = db.prepare("INSERT OR IGNORE INTO test (s) VALUES (?)");
+    for (const s of a) {
+      for (let i = 0; i < 2; i++) {
+        stmt.run(s);
+      }
+    }
+    stmt = db.prepare("SELECT id FROM test WHERE s = ?");
+    for (let i = 0; i < 3; i++) {
+      stmt.get(a[i], (err, row) => expect(row.id).toBe(i + 1));
+    }
+  });
+});
+
+test.each([
+  [0, "0"],
+  [1, "1"],
+  [2147483647, "zik0zj"]
+])("encode(%p)", (n, expected) => expect(encode(n)).toBe(expected));
+
+test.each([
+  ["0", 0],
+  ["1", 1],
+  ["zik0zj", 2147483647]
+])("decode(%p)", (s, expected) => expect(decode(s)).toBe(expected));
