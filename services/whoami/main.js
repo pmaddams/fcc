@@ -21,6 +21,10 @@ export function createServer() {
 
   app.use(helmet());
   app.use(compression());
+  app.use((req, res, next) => {
+    log(req.ip, req.method, req.url);
+    next();
+  });
 
   return new Proxy(app, {
     get(target, prop) {
@@ -29,19 +33,23 @@ export function createServer() {
           return (port = 3000) => {
             target.use((req, res) => res.sendStatus(404));
             target.use((err, req, res, next) => {
-              console.error(err);
+              log(err);
               return res.sendStatus(500);
             });
 
-            return target.listen(port, () =>
-              console.log(`Listening on port ${port}`)
-            );
+            return target.listen(port, () => log("Listening on port", port));
           };
         default:
           return target[prop];
       }
     }
   });
+}
+
+function log(...args) {
+  if (process.env.NODE_ENV !== "test") {
+    console.log(new Date().toUTCString() + ":", ...args);
+  }
 }
 
 if (process.env.NODE_ENV !== "test") {
