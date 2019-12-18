@@ -22,8 +22,8 @@ function main() {
   );
 
   app.get("/api/shorturl/:id", (req, res) =>
-    getURL(db, decode(req.params.id), url =>
-      url ? res.redirect(301, url) : res.sendStatus(404)
+    getURL(db, decode(req.params.id), (error, url) =>
+      error ? res.sendStatus(404) : res.redirect(301, url)
     )
   );
 
@@ -69,7 +69,7 @@ export function openDatabase(file = ":memory:") {
     .on("trace", log);
 }
 
-function setURL(db, url, k) {
+export function setURL(db, url, k) {
   try {
     new URL(url);
   } catch (err) {
@@ -87,9 +87,9 @@ function setURL(db, url, k) {
   );
 }
 
-function getURL(db, id, k) {
+export function getURL(db, id, k) {
   db.get("SELECT url FROM shorturl WHERE id = ?", [id], (err, row) =>
-    k(row ? row.url : null)
+    row ? k(null, row.url) : k("not found")
   );
 }
 

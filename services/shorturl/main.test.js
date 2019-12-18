@@ -1,6 +1,13 @@
 import fetch from "node-fetch";
 
-import { createServer, openDatabase, encode, decode } from "./main.js";
+import {
+  createServer,
+  openDatabase,
+  setURL,
+  getURL,
+  encode,
+  decode
+} from "./main.js";
 
 describe("createServer()", () => {
   const port = 8080;
@@ -40,8 +47,9 @@ describe("createServer()", () => {
 });
 
 test("openDatabase()", () => {
-  const db = openDatabase(),
-    a = ["foo", "bar", "baz"];
+  const db = openDatabase();
+  const a = ["foo", "bar", "baz"];
+
   db.serialize(() => {
     db.run(
       "CREATE TABLE test (id INTEGER PRIMARY KEY, s TEXT UNIQUE NOT NULL)"
@@ -58,8 +66,25 @@ test("openDatabase()", () => {
       stmt.get(a[i], (err, row) => expect(row.id).toBe(i + 1));
     }
     stmt.finalize();
+
     db.close();
   });
+});
+
+test("database operations", () => {
+  const db = openDatabase();
+  const url1 = "http://foo.com";
+  const url2 = "https://bar.baz.io/api?key=value&something=else#section";
+
+  setURL(db, "not a url", (error, id) => expect(id).toBeUndefined());
+  setURL(db, url1, (error, id) => expect(id).toBe(1));
+  setURL(db, url2, (error, id) => expect(id).toBe(2));
+
+  getURL(db, 1, (error, url) => expect(url).toBe(url1));
+  getURL(db, 2, (error, url) => expect(url).toBe(url2));
+  getURL(db, 3, (error, url) => expect(url).toBeUndefined());
+
+  db.close();
 });
 
 test.each([
