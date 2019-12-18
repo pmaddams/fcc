@@ -52,10 +52,13 @@ test("openDatabase()", () => {
         stmt.run(s);
       }
     }
+    stmt.finalize();
     stmt = db.prepare("SELECT id FROM test WHERE s = ?");
     for (let i = 0; i < 3; i++) {
       stmt.get(a[i], (err, row) => expect(row.id).toBe(i + 1));
     }
+    stmt.finalize();
+    db.close();
   });
 });
 

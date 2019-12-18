@@ -37,6 +37,10 @@ export function createServer() {
 
   app.use(helmet());
   app.use(compression());
+  app.use((req, res, next) => {
+    log(req.ip, req.method, req.url);
+    next();
+  });
 
   return new Proxy(app, {
     get(target, prop) {
@@ -45,13 +49,11 @@ export function createServer() {
           return (port = 3000) => {
             target.use((req, res) => res.sendStatus(404));
             target.use((err, req, res, next) => {
-              console.error(err);
+              log(err);
               return res.sendStatus(500);
             });
 
-            return target.listen(port, () =>
-              console.log(`Listening on port ${port}`)
-            );
+            return target.listen(port, () => log("Listening on port", port));
           };
         default:
           return target[prop];
@@ -62,10 +64,9 @@ export function createServer() {
 
 export function openDatabase(file = ":memory:") {
   sqlite3.verbose();
-  const db = new sqlite3.Database(file);
-  console.log(`Opened database ${file}`);
-
-  return db;
+  return new sqlite3.Database(file)
+    .on("open", () => log("Opened database", file))
+    .on("trace", log);
 }
 
 function setURL(db, url, k) {
@@ -98,6 +99,12 @@ export function encode(n) {
 
 export function decode(s) {
   return parseInt(s, 36);
+}
+
+function log(...args) {
+  if (process.env.NODE_ENV !== "test") {
+    console.log(new Date().toUTCString() + ":", ...args);
+  }
 }
 
 if (process.env.NODE_ENV !== "test") {
