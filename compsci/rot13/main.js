@@ -23,9 +23,7 @@ export function rotateChar(c, n) {
   } else {
     return c;
   }
-  const i = ord(c) - base;
-
-  return String.fromCharCode(base + rotateIndex(i, n));
+  return String.fromCharCode(base + rotateIndex(ord(c) - base, n));
 }
 
 export function rotateIndex(i, n) {
