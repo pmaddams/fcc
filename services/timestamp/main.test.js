@@ -7,14 +7,12 @@ describe("createServer()", () => {
   let server;
 
   beforeAll(() => {
-    const app = createServer();
-
-    app.get("/", (req, res) => res.sendStatus(200));
-    app.get("/error", (req, res) => {
-      throw new Error("Secret");
-    });
-
-    server = app.listen(port);
+    server = createServer()
+      .get("/", (req, res) => res.sendStatus(200))
+      .get("/error", (req, res) => {
+        throw new Error("Secret");
+      })
+      .listen(port);
   });
 
   afterAll(() => server.close());
@@ -27,13 +25,13 @@ describe("createServer()", () => {
   });
 
   test("404", async () => {
-    const res = await fetch(`${url}/admin`);
+    const res = await fetch(url + "/admin");
     expect(res.status).toBe(404);
     expect(await res.text()).toBe("Not Found");
   });
 
   test("500", async () => {
-    const res = await fetch(`${url}/error`);
+    const res = await fetch(url + "/error");
     expect(res.status).toBe(500);
     expect(await res.text()).toBe("Internal Server Error");
   });

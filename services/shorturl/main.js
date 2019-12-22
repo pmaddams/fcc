@@ -6,60 +6,26 @@ import helmet from "helmet";
 import sqlite3 from "sqlite3";
 
 function main() {
-  const app = createServer();
   const db = openDatabase(process.env.DB);
 
-  app.use(express.urlencoded());
-
-  app.post("/api/shorturl/new", (req, res) =>
-    setURL(db, req.body.url, (error, id) =>
-      res.json(
-        error
-          ? { error }
-          : { original_url: req.body.url, short_url: encode(id) }
+  createServer()
+    .use(express.urlencoded())
+    .post("/api/shorturl/new", (req, res) =>
+      setURL(db, req.body.url, (error, id) =>
+        res.json(
+          error
+            ? { error }
+            : { original_url: req.body.url, short_url: encode(id) }
+        )
       )
     )
-  );
-
-  app.get("/api/shorturl/:id", (req, res) =>
-    getURL(db, decode(req.params.id), (error, url) =>
-      error ? res.sendStatus(404) : res.redirect(301, url)
+    .get("/api/shorturl/:id", (req, res) =>
+      getURL(db, decode(req.params.id), (error, url) =>
+        error ? res.sendStatus(404) : res.redirect(301, url)
+      )
     )
-  );
-
-  app.use(express.static("public"));
-
-  app.listen(process.env.PORT);
-}
-
-export function createServer() {
-  const app = express();
-
-  app.use(helmet());
-  app.use(compression());
-  app.use((req, res, next) => {
-    log(req.ip, req.method, req.url);
-    next();
-  });
-
-  return new Proxy(app, {
-    get(target, prop) {
-      switch (prop) {
-        case "listen":
-          return (port = 3000) => {
-            target.use((req, res) => res.sendStatus(404));
-            target.use((err, req, res, next) => {
-              log(err);
-              return res.sendStatus(500);
-            });
-
-            return target.listen(port, () => log("Listening on port", port));
-          };
-        default:
-          return target[prop];
-      }
-    }
-  });
+    .use(express.static("public"))
+    .listen(process.env.PORT);
 }
 
 export function openDatabase(file = ":memory:") {
@@ -67,6 +33,35 @@ export function openDatabase(file = ":memory:") {
   return new sqlite3.Database(file)
     .on("open", () => log("Opened database", file))
     .on("trace", log);
+}
+
+export function createServer() {
+  return new Proxy(
+    express()
+      .use(helmet())
+      .use(compression())
+      .use((req, res, next) => {
+        log(req.ip, req.method, req.url);
+        next();
+      }),
+    {
+      get(target, prop) {
+        switch (prop) {
+          case "listen":
+            return (port = 3000) =>
+              target
+                .use((req, res) => res.sendStatus(404))
+                .use((err, req, res, next) => {
+                  log(err);
+                  return res.sendStatus(500);
+                })
+                .listen(port, () => log("Listening on port", port));
+          default:
+            return target[prop];
+        }
+      }
+    }
+  );
 }
 
 export function setURL(db, url, k) {

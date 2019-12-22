@@ -3,41 +3,38 @@ import express from "express";
 import helmet from "helmet";
 
 function main() {
-  const app = createServer();
-
-  app.use(express.static("public"));
-
-  app.listen(process.env.PORT);
+  createServer()
+    .use(express.static("public"))
+    .listen(process.env.PORT);
 }
 
 export function createServer() {
-  const app = express();
-
-  app.use(helmet());
-  app.use(compression());
-  app.use((req, res, next) => {
-    log(req.ip, req.method, req.url);
-    next();
-  });
-
-  return new Proxy(app, {
-    get(target, prop) {
-      switch (prop) {
-        case "listen":
-          return (port = 3000) => {
-            target.use((req, res) => res.sendStatus(404));
-            target.use((err, req, res, next) => {
-              log(err);
-              return res.sendStatus(500);
-            });
-
-            return target.listen(port, () => log("Listening on port", port));
-          };
-        default:
-          return target[prop];
+  return new Proxy(
+    express()
+      .use(helmet())
+      .use(compression())
+      .use((req, res, next) => {
+        log(req.ip, req.method, req.url);
+        next();
+      }),
+    {
+      get(target, prop) {
+        switch (prop) {
+          case "listen":
+            return (port = 3000) =>
+              target
+                .use((req, res) => res.sendStatus(404))
+                .use((err, req, res, next) => {
+                  log(err);
+                  return res.sendStatus(500);
+                })
+                .listen(port, () => log("Listening on port", port));
+          default:
+            return target[prop];
+        }
       }
     }
-  });
+  );
 }
 
 function log(...args) {
