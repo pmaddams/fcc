@@ -68,7 +68,8 @@ export function setURL(db, url, k) {
   try {
     new URL(url);
   } catch (err) {
-    return k("invalid URL");
+    k("invalid URL");
+    return;
   }
   db.serialize(() =>
     db
