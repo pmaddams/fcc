@@ -1,6 +1,0 @@
-{
-  "scripts": {
-    "start": "node --experimental-modules main.js"
-  },
-  "type": "module"
-}
