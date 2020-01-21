@@ -72,7 +72,7 @@ describe("createServer()", () => {
 test("database operations", () => {
   const db = openDatabase();
   const url1 = "http://foo.com";
-  const url2 = "https://bar.baz.io/api?key=value&something=else#section";
+  const url2 = "https://bar.baz.io/quux?key=value&something=else#section";
 
   setURL(db, "not a url", (error, id) => expect(id).toBeUndefined());
   setURL(db, url1, (error, id) => expect(id).toBe(1));
