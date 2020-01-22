@@ -4,7 +4,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>URL Shortener</title>
   <form action="api/shorturl/new" method="post">
-    <input autofocus type="text" name="url" />
+    <input name="url" type="url" autofocus required />
     <input type="submit" />
   </form>
 </html>
