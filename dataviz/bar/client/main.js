@@ -12,8 +12,9 @@ function main() {
       .attr("id", "title")
       .text("U.S. Gross Domestic Product");
 
-    const svg = d3
-      .select("body")
+    const figure = d3.select("body").append("figure");
+
+    const svg = figure
       .append("svg")
       .attr("viewBox", `0 0 ${viewBoxWidth} ${viewBoxHeight}`);
 
@@ -35,6 +36,8 @@ function main() {
       .attr("y", d => scaleY(d.gdp))
       .attr("width", viewBoxWidth / data.length)
       .attr("height", viewBoxHeight);
+
+    figure.append("figcaption").attr("id", "tooltip");
   });
 }
 

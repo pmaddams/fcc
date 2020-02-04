@@ -8,10 +8,14 @@
   --violet: rgb(156, 39, 176);
 }
 
-h1 {
+body {
   text-align: center;
 }
 
 svg rect {
   fill: var(--green);
+}
+
+svg rect:hover {
+  opacity: 0.5;
 }
