@@ -7,3 +7,11 @@
   --indigo: rgb(63, 81, 181);
   --violet: rgb(156, 39, 176);
 }
+
+h1 {
+  text-align: center;
+}
+
+svg rect {
+  fill: var(--green);
+}
