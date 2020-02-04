@@ -32,10 +32,14 @@ function main() {
       .selectAll("rect")
       .data(data)
       .join("rect")
+      .attr("class", "bar")
+      .attr("data-date", d => d.date.toUTCString())
+      .attr("data-gdp", d => d.gdp)
       .attr("x", (d, i) => scaleX(i))
       .attr("y", d => scaleY(d.gdp))
-      .attr("width", viewBoxWidth / data.length)
-      .attr("height", viewBoxHeight);
+      .attr("width", (0.75 * viewBoxWidth) / data.length)
+      .attr("height", viewBoxHeight)
+      .on("mouseover", d => d3.select("#tooltip").text(tooltip(d)));
 
     figure.append("figcaption").attr("id", "tooltip");
   });
@@ -46,6 +50,14 @@ async function getData(url) {
     date: new Date(p[0]),
     gdp: p[1]
   }));
+}
+
+function tooltip(d) {
+  let q = d.date.getUTCMonth() / 3 + 1;
+  if (![1, 2, 3, 4].includes(q)) {
+    return "";
+  }
+  return `Q${q} ${d.date.getUTCFullYear()}: $${d.gdp} billion`;
 }
 
 if (process.env.NODE_ENV !== "test") {

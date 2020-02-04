@@ -12,10 +12,10 @@ body {
   text-align: center;
 }
 
-svg rect {
+.bar {
   fill: var(--green);
 }
 
-svg rect:hover {
+.bar:hover {
   opacity: 0.5;
 }
