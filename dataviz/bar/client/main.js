@@ -2,9 +2,9 @@ import * as d3 from "d3";
 
 const url =
   "https://raw.githubusercontent.com/FreeCodeCamp/ProjectReferenceData/master/GDP-data.json";
-const viewBoxWidth = 1200;
+const viewBoxWidth = 720;
 const paddingWidth = 0.05 * viewBoxWidth;
-const viewBoxHeight = 600;
+const viewBoxHeight = 360;
 const paddingHeight = 0.05 * viewBoxHeight;
 
 function main() {
@@ -25,6 +25,14 @@ function main() {
       .domain([0, data.length])
       .range([paddingWidth, viewBoxWidth - paddingWidth]);
 
+    const scaleYears = d3
+      .scaleLinear()
+      .domain([
+        data[0].date.getUTCFullYear(),
+        data[data.length - 1].date.getUTCFullYear()
+      ])
+      .range([paddingWidth, viewBoxWidth - paddingWidth]);
+
     const scaleY = d3
       .scaleLinear()
       .domain([0, d3.max(data, d => d.gdp)])
@@ -35,13 +43,22 @@ function main() {
       .domain([0, d3.max(data, d => d.gdp)])
       .range([0, viewBoxHeight - 2 * paddingHeight]);
 
-    const scaleYears = d3
-      .scaleLinear()
-      .domain([
-        data[0].date.getUTCFullYear(),
-        data[data.length - 1].date.getUTCFullYear()
-      ])
-      .range([paddingWidth, viewBoxWidth - paddingWidth]);
+    svg
+      .append("g")
+      .attr("id", "x-axis")
+      .attr("transform", `translate(0, ${viewBoxHeight - paddingHeight})`)
+      .call(d3.axisBottom(scaleYears).tickFormat(d3.format("d")));
+
+    svg
+      .append("g")
+      .attr("id", "y-axis")
+      .attr("transform", `translate(${paddingWidth}, 0)`)
+      .call(
+        d3
+          .axisLeft(scaleY)
+          .tickSize(-(viewBoxWidth - 2 * paddingWidth))
+          .tickSizeOuter(0)
+      );
 
     const dataWidth = (viewBoxWidth - 2 * paddingWidth) / data.length;
     const dataBarWidth = 0.75 * dataWidth;
@@ -64,18 +81,6 @@ function main() {
           .attr("data-date", d.date.toUTCString())
           .text(tooltip(d))
       );
-
-    svg
-      .append("g")
-      .attr("id", "x-axis")
-      .attr("transform", `translate(0, ${viewBoxHeight - paddingHeight})`)
-      .call(d3.axisBottom(scaleYears).tickFormat(d3.format("d")));
-
-    svg
-      .append("g")
-      .attr("id", "y-axis")
-      .attr("transform", `translate(${paddingWidth}, 0)`)
-      .call(d3.axisLeft(scaleY));
 
     figure.append("figcaption").attr("id", "tooltip");
   });
