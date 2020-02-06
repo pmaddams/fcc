@@ -58,7 +58,12 @@ function main() {
       .attr("y", d => scaleY(d.gdp))
       .attr("width", dataBarWidth)
       .attr("height", d => scaleHeight(d.gdp))
-      .on("mouseover", d => d3.select("#tooltip").text(tooltip(d)));
+      .on("mouseover", d =>
+        d3
+          .select("#tooltip")
+          .attr("data-date", d.date.toUTCString())
+          .text(tooltip(d))
+      );
 
     svg
       .append("g")
