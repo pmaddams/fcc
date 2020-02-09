@@ -87,9 +87,9 @@ function main() {
 }
 
 async function getData(url) {
-  return (await d3.json(url)).data.map(p => ({
-    date: new Date(p[0]),
-    gdp: p[1]
+  return (await d3.json(url)).data.map(([date, gdp]) => ({
+    date: new Date(date),
+    gdp
   }));
 }
 

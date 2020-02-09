@@ -79,11 +79,11 @@ function main() {
 }
 
 async function getData(url) {
-  return (await d3.json(url)).map(obj => ({
-    year: obj.Year,
-    time: obj.Seconds,
-    name: obj.Name,
-    doping: obj.Doping !== ""
+  return (await d3.json(url)).map(({ Seconds, Name, Year, Doping }) => ({
+    time: Seconds,
+    name: Name,
+    year: Year,
+    doping: Doping !== ""
   }));
 }
 
