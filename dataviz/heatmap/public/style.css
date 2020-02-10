@@ -1,9 +1,31 @@
 :root {
-  --red: rgb(244, 67, 54);
-  --orange: rgb(255, 152, 0);
   --yellow: rgb(255, 235, 59);
-  --green: rgb(76, 175, 80);
-  --blue: rgb(33, 150, 243);
-  --indigo: rgb(63, 81, 181);
-  --violet: rgb(156, 39, 176);
+  --orange: rgb(255, 152, 0);
+  --red: rgb(244, 67, 54);
+}
+
+body {
+  font-family: sans-serif;
+  text-align: center;
+}
+
+.cell.low {
+  fill: var(--yellow);
+}
+
+.cell.medium {
+  fill: var(--orange);
+}
+
+.cell.high {
+  fill: var(--red);
+}
+
+.cell.extreme {
+  fill: black;
+}
+
+.cell:hover {
+  stroke-width: 1;
+  stroke: white;
 }
