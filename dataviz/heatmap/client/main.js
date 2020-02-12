@@ -21,10 +21,6 @@ function main() {
 
     const figure = d3.select("body").append("figure");
 
-    const legend = figure
-      .append("svg")
-      .attr("viewBox", `0 0 ${viewBoxWidth} ${paddingHeight}`);
-
     const svg = figure
       .append("svg")
       .attr("viewBox", `0 0 ${viewBoxWidth} ${viewBoxHeight}`);
@@ -81,6 +77,58 @@ function main() {
           .attr("data-year", d.year)
           .text(tooltip(d))
       );
+
+    const legend = figure
+      .append("svg")
+      .attr("viewBox", `0 0 ${viewBoxWidth} ${paddingHeight}`);
+
+    const legendItems = [
+      {
+        className: "low",
+        text: "Low"
+      },
+      {
+        className: "medium",
+        text: "Medium"
+      },
+      {
+        className: "high",
+        text: "High"
+      },
+      {
+        className: "extreme",
+        text: "Extreme"
+      }
+    ];
+
+    const legendItemWidth = viewBoxWidth / legendItems.length;
+
+    const legendRectSize = 0.5 * paddingHeight;
+
+    const legendPadding = 0.5 * legendRectSize;
+
+    for (let i = 0; i < legendItems.length; i++) {
+      legend
+        .append("rect")
+        .attr("x", paddingWidth + i * legendItemWidth + legendPadding)
+        .attr("y", legendPadding)
+        .attr("width", legendRectSize)
+        .attr("height", legendRectSize)
+        .attr("class", legendItems[i].className);
+
+      legend
+        .append("text")
+        .attr(
+          "x",
+          paddingWidth +
+            i * legendItemWidth +
+            2 * legendPadding +
+            legendRectSize
+        )
+        .attr("y", legendPadding + 0.85 * legendRectSize)
+        .attr("font-size", legendRectSize)
+        .text(legendItems[i].text);
+    }
 
     figure.append("figcaption").attr("id", "tooltip");
   });

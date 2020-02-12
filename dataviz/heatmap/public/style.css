@@ -9,19 +9,19 @@ body {
   text-align: center;
 }
 
-.cell.low {
+.low {
   fill: var(--yellow);
 }
 
-.cell.medium {
+.medium {
   fill: var(--orange);
 }
 
-.cell.high {
+.high {
   fill: var(--red);
 }
 
-.cell.extreme {
+.extreme {
   fill: black;
 }
 
