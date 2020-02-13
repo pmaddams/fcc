@@ -9,3 +9,19 @@ body {
   font-family: sans-serif;
   text-align: center;
 }
+
+.highly-uneducated {
+  fill: --var(red);
+}
+
+.uneducated {
+  fill: --var(pink);
+}
+
+.educated {
+  fill: --var(lightblue);
+}
+
+.highly-educated {
+  fill: --var(blue);
+}
