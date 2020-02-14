@@ -19,6 +19,7 @@
     "helmet": "latest",
     "jest": "latest",
     "node-fetch": "latest",
+    "topojson-client": "latest",
     "webpack": "latest",
     "webpack-cli": "latest"
   },

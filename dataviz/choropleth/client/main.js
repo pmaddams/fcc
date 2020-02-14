@@ -2,7 +2,7 @@ import * as d3 from "d3";
 
 const topologyURL =
   "https://cdn.freecodecamp.org/testable-projects-fcc/data/choropleth_map/counties.json";
-const educationURL =
+const metadataURL =
   "https://cdn.freecodecamp.org/testable-projects-fcc/data/choropleth_map/for_user_education.json";
 const viewBoxWidth = 720;
 const paddingWidth = 0.05 * viewBoxWidth;
@@ -10,7 +10,7 @@ const viewBoxHeight = 360;
 const paddingHeight = 0.05 * viewBoxHeight;
 
 function main() {
-  getData(topologyURL, educationURL).then(data => {
+  getData(topologyURL, metadataURL).then(data => {
     d3.select("body")
       .append("h1")
       .attr("id", "title")
@@ -83,17 +83,20 @@ function main() {
   });
 }
 
-async function getData(topologyURL, educationURL) {
-  const m = new Map();
-  (await d3.json(educationURL)).forEach(
-    ({ fips, state, area_name, bachelorsOrHigher }) =>
-      m.set(fips, {
-        state,
-        area_name,
-        bachelorsOrHigher
-      })
-  );
-  return m;
+async function getData(topologyURL, metadataURL) {
+  return {
+    topology: await d3.json(topologyURL),
+    metadata: new Map(
+      (
+        await d3.json(metadataURL)
+      ).map(
+        ({ fips, state, area_name: county, bachelorsOrHigher: graduated }) => [
+          fips,
+          { state, county, graduated }
+        ]
+      )
+    )
+  };
 }
 
 function tooltip(d) {
