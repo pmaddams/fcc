@@ -10,18 +10,18 @@ body {
   text-align: center;
 }
 
-.highly-uneducated {
-  fill: --var(red);
+.highly-ignorant {
+  fill: var(--red);
 }
 
-.uneducated {
-  fill: --var(pink);
+.ignorant {
+  fill: var(--pink);
 }
 
 .educated {
-  fill: --var(lightblue);
+  fill: var(--lightblue);
 }
 
 .highly-educated {
-  fill: --var(blue);
+  fill: var(--blue);
 }

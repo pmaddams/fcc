@@ -33,12 +33,12 @@ function main() {
 
     const legendItems = [
       {
-        className: "highly-uneducated",
-        text: "Highly Uneducated"
+        className: "highly-ignorant",
+        text: "Highly Ignorant"
       },
       {
-        className: "uneducated",
-        text: "Uneducated"
+        className: "ignorant",
+        text: "Ignorant"
       },
       {
         className: "educated",
