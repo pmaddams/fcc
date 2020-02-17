@@ -1,9 +1,41 @@
 :root {
-  --red: rgb(244, 67, 54);
+  --lightorange: rgb(255, 204, 128);
+  --mediumorange: rgb(255, 183, 77);
   --orange: rgb(255, 152, 0);
-  --yellow: rgb(255, 235, 59);
-  --green: rgb(76, 175, 80);
-  --blue: rgb(33, 150, 243);
-  --indigo: rgb(63, 81, 181);
+  --lightviolet: rgb(206, 147, 216);
+  --mediumviolet: rgb(186, 104, 200);
   --violet: rgb(156, 39, 176);
+}
+
+body {
+  font-family: sans-serif;
+  text-align: center;
+}
+
+.technology.low {
+  fill: var(--lightorange);
+}
+
+.technology.medium {
+  fill: var(--mediumorange);
+}
+
+.technology.high {
+  fill: var(--orange);
+}
+
+.art.low {
+  fill: var(--lightviolet);
+}
+
+.art.medium {
+  fill: var(--mediumviolet);
+}
+
+.art.high {
+  fill: var(--violet);
+}
+
+.other {
+  fill: gray;
 }
