@@ -1,9 +1,8 @@
 :root {
-  --lightorange: rgb(255, 204, 128);
-  --mediumorange: rgb(255, 183, 77);
+  --red: rgb(244, 67, 54);
   --orange: rgb(255, 152, 0);
-  --lightviolet: rgb(206, 147, 216);
-  --mediumviolet: rgb(186, 104, 200);
+  --green: rgb(76, 175, 80);
+  --blue: rgb(33, 150, 243);
   --violet: rgb(156, 39, 176);
 }
 
@@ -12,30 +11,30 @@ body {
   text-align: center;
 }
 
-.technology.low {
-  fill: var(--lightorange);
+text {
+  font-size: 10px;
 }
 
-.technology.medium {
-  fill: var(--mediumorange);
+.product-design {
+  fill: var(--red);
 }
 
-.technology.high {
+.tabletop-games {
   fill: var(--orange);
 }
 
-.art.low {
-  fill: var(--lightviolet);
+.video-games {
+  fill: var(--green);
 }
 
-.art.medium {
-  fill: var(--mediumviolet);
+.technology {
+  fill: var(--blue);
 }
 
-.art.high {
+.hardware {
   fill: var(--violet);
 }
 
 .other {
-  fill: gray;
+  fill: silver;
 }

@@ -35,26 +35,15 @@ function main() {
         .sort((a, b) => b.height - a.height || b.value - a.value)
     );
 
-    const scale = d3
-      .scaleQuantile()
-      .domain(
-        tree
-          .leaves()
-          .map(d => d.data.value)
-          .sort()
-      )
-      .range([...Array(5).fill("low"), ...Array(4).fill("medium"), "high"]);
-
-    svg
+    const leaf = svg
       .selectAll("g")
       .data(tree.leaves())
       .join("g")
-      .attr("transform", d => `translate(${d.x0}, ${d.y0})`)
+      .attr("transform", d => `translate(${d.x0}, ${d.y0})`);
+
+    leaf
       .append("rect")
-      .attr(
-        "class",
-        d => `tile ${category(d.data.category)} ${scale(d.data.value)}`
-      )
+      .attr("class", d => `tile ${category(d.data.category)}`)
       .attr("width", d => d.x1 - d.x0)
       .attr("height", d => d.y1 - d.y0)
       .attr("data-name", d => d.data.name)
@@ -67,23 +56,23 @@ function main() {
           .text(tooltip(d))
       );
 
+    leaf
+      .append("text")
+      .attr("x", 1)
+      .attr("y", 10)
+      .text(d => `$${Math.round(d.data.value / 1000000)}m`);
+
     const legend = figure
       .append("svg")
       .attr("viewBox", [0, 0, viewBoxWidth, paddingHeight]);
 
     const legendItems = [
-      {
-        className: "technology high",
-        text: "Technology"
-      },
-      {
-        className: "art high",
-        text: "Art"
-      },
-      {
-        className: "other",
-        text: "Other"
-      }
+      "Product Design",
+      "Tabletop Games",
+      "Video Games",
+      "Technology",
+      "Hardware",
+      "Other"
     ];
 
     const legendItemWidth = viewBoxWidth / legendItems.length;
@@ -99,7 +88,7 @@ function main() {
         .attr("y", legendPadding)
         .attr("width", legendRectSize)
         .attr("height", legendRectSize)
-        .attr("class", `legend-item ${legendItems[i].className}`);
+        .attr("class", `legend-item ${toClassName(legendItems[i])}`);
 
       legend
         .append("text")
@@ -112,7 +101,7 @@ function main() {
         )
         .attr("y", legendPadding + 0.85 * legendRectSize)
         .attr("font-size", legendRectSize)
-        .text(legendItems[i].text);
+        .text(legendItems[i]);
     }
 
     figure.append("figcaption").attr("id", "tooltip");
@@ -126,30 +115,21 @@ function tooltip(d) {
 function category(s) {
   switch (s) {
     case "Product Design":
-    case "Gaming Hardware":
-    case "Hardware":
-    case "3D Printing":
-    case "Technology":
-    case "Wearables":
-    case "Technology":
-    case "Food":
-    case "Gadgets":
-    case "Drinks":
-      return "technology";
     case "Tabletop Games":
     case "Video Games":
-    case "Sound":
-    case "Television":
-    case "Narrative Film":
-    case "Web":
-    case "Games":
-    case "Sculpture":
-    case "Apparel":
-    case "Art":
-      return "art";
+    case "Technology":
+    case "Hardware":
+      return toClassName(s);
     default:
       return "other";
   }
+}
+
+function toClassName(s) {
+  return s
+    .toLowerCase()
+    .split(" ")
+    .join("-");
 }
 
 if (process.env.NODE_ENV !== "test") {
