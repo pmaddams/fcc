@@ -20,13 +20,15 @@ function main() {
     d3.select("body")
       .append("p")
       .attr("id", "description")
-      .text("");
+      .text("Percentage of Adults with Bachelor's Degree or Higher by County");
 
     const figure = d3.select("body").append("figure");
 
     const svg = figure
       .append("svg")
       .attr("viewBox", `0 0 ${viewBoxWidth} ${viewBoxHeight}`);
+
+    const path = d3.geoPath();
 
     const scale = d3
       .scaleQuantile()
@@ -49,15 +51,24 @@ function main() {
       .data(topojson.feature(topology, topology.objects.counties).features)
       .join("path")
       .attr("class", d => `county ${scale(metadata.get(d.id).graduated)}`)
+      .attr("d", path)
       .attr("data-fips", d => d.id)
       .attr("data-education", d => metadata.get(d.id).graduated)
-      .attr("d", d3.geoPath())
       .on("mouseover", d =>
         d3
           .select("#tooltip")
           .attr("data-education", metadata.get(d.id).graduated)
           .text(tooltip(metadata.get(d.id)))
       );
+
+    svg
+      .append("g")
+      .attr("class", "states")
+      .selectAll("path")
+      .data(topojson.feature(topology, topology.objects.states).features)
+      .join("path")
+      .attr("class", "state")
+      .attr("d", path);
 
     const legend = figure
       .append("svg")

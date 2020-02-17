@@ -10,6 +10,11 @@ body {
   text-align: center;
 }
 
+.state {
+  fill: none;
+  stroke: white;
+}
+
 .highly-ignorant {
   fill: var(--red);
 }
