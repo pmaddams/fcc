@@ -26,7 +26,7 @@ function main() {
 
     const svg = figure
       .append("svg")
-      .attr("viewBox", `0 0 ${viewBoxWidth} ${viewBoxHeight}`);
+      .attr("viewBox", [0, 0, viewBoxWidth, viewBoxHeight]);
 
     const path = d3.geoPath();
 
