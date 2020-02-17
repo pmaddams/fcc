@@ -80,7 +80,7 @@ function main() {
 
     const legend = figure
       .append("svg")
-      .attr("viewBox", `0 0 ${viewBoxWidth} ${paddingHeight}`);
+      .attr("viewBox", [0, 0, viewBoxWidth, paddingHeight]);
 
     const legendItems = [
       {
