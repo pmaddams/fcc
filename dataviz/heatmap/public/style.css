@@ -26,6 +26,5 @@ body {
 }
 
 .cell:hover {
-  stroke-width: 1;
   stroke: white;
 }
