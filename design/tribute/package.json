@@ -1,6 +1,34 @@
 {
+  "babel": {
+    "plugins": [
+      "@babel/plugin-transform-runtime"
+    ],
+    "presets": [
+      "@babel/preset-env"
+    ]
+  },
+  "dependencies": {
+    "@babel/core": "latest",
+    "@babel/plugin-transform-runtime": "latest",
+    "@babel/preset-env": "latest",
+    "@babel/runtime": "latest",
+    "bootstrap": "latest",
+    "compression": "latest",
+    "css-loader": "latest",
+    "express": "latest",
+    "helmet": "latest",
+    "jest": "latest",
+    "node-fetch": "latest",
+    "sass": "latest",
+    "sass-loader": "latest",
+    "style-loader": "latest",
+    "webpack": "latest",
+    "webpack-cli": "latest"
+  },
   "scripts": {
-    "start": "node --experimental-modules main.js"
+    "build": "webpack",
+    "start": "node --experimental-modules main.js",
+    "test": "jest"
   },
   "type": "module"
 }
