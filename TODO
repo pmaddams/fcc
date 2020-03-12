@@ -1,0 +1,4 @@
+Remove --experimental-modules flag
+Remove jquery
+Update popper.js to @popperjs/core
+Upgrade sass to node-sass

@@ -1,5 +1,9 @@
 module.exports = {
   entry: __dirname + "/client/main.js",
-  module: { rules: [{ exclude: /node_modules/, loader: "babel-loader" }] },
-  output: { filename: "bundle.js", path: __dirname + "/public" }
+  module: {
+    rules: [
+      { test: /\.js$/, include: __dirname + "/client", use: "babel-loader" }
+    ]
+  },
+  output: { path: __dirname + "/public", filename: "bundle.js" }
 };

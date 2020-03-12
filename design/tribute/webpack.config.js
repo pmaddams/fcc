@@ -2,8 +2,13 @@ module.exports = {
   entry: __dirname + "/client/main.js",
   module: {
     rules: [
-      { test: /\.scss$/, use: ["style-loader", "css-loader", "sass-loader"] }
+      { test: /\.js$/, include: __dirname + "/client", use: "babel-loader" },
+      {
+        test: /\.scss$/,
+        include: __dirname + "/client",
+        use: ["style-loader", "css-loader", "sass-loader"]
+      }
     ]
   },
-  output: { filename: "bundle.js", path: __dirname + "/public" }
+  output: { path: __dirname + "/public", filename: "bundle.js" }
 };
