@@ -9,22 +9,22 @@ body {
   text-align: center;
 }
 
-.low {
+svg .low {
   fill: var(--yellow);
 }
 
-.medium {
+svg .medium {
   fill: var(--orange);
 }
 
-.high {
+svg .high {
   fill: var(--red);
 }
 
-.extreme {
+svg .extreme {
   fill: black;
 }
 
-.cell:hover {
+svg .cell:hover {
   stroke: white;
 }

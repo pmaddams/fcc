@@ -3,7 +3,8 @@
   --orange: rgb(255, 152, 0);
   --green: rgb(76, 175, 80);
   --blue: rgb(33, 150, 243);
-  --violet: rgb(156, 39, 176);
+  --purple: rgb(156, 39, 176);
+  --gray: rgb(158, 158, 158);
 }
 
 body {
@@ -11,30 +12,34 @@ body {
   text-align: center;
 }
 
-text {
+svg text {
   font-size: 10px;
 }
 
-.product-design {
+svg .product-design {
   fill: var(--red);
 }
 
-.tabletop-games {
+svg .tabletop-games {
   fill: var(--orange);
 }
 
-.video-games {
+svg .video-games {
   fill: var(--green);
 }
 
-.technology {
+svg .technology {
   fill: var(--blue);
 }
 
-.hardware {
-  fill: var(--violet);
+svg .hardware {
+  fill: var(--purple);
 }
 
-.other {
-  fill: silver;
+svg .other {
+  fill: var(--gray);
+}
+
+svg rect:hover {
+  opacity: 50%;
 }

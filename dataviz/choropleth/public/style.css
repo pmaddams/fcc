@@ -10,23 +10,23 @@ body {
   text-align: center;
 }
 
-.state {
+svg .state {
   fill: none;
   stroke: white;
 }
 
-.highly-ignorant {
+svg .highly-ignorant {
   fill: var(--red);
 }
 
-.ignorant {
+svg .ignorant {
   fill: var(--pink);
 }
 
-.educated {
+svg .educated {
   fill: var(--lightblue);
 }
 
-.highly-educated {
+svg .highly-educated {
   fill: var(--blue);
 }

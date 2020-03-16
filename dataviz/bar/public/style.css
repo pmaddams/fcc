@@ -8,14 +8,14 @@ body {
   text-align: center;
 }
 
-.bar {
+svg .bar {
   fill: var(--green);
 }
 
-.bar:hover {
+svg .bar:hover {
   fill: var(--lightgreen);
 }
 
-#y-axis .tick line {
-  opacity: 0.1;
+svg #y-axis .tick line {
+  opacity: 10%;
 }
