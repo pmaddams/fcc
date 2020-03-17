@@ -37,7 +37,7 @@ function main() {
         .scaleQuantile()
         .domain(
           Array.from(metadata.values())
-            .map(v => v.graduated)
+            .map(v => v.bachelorsOrHigher)
             .sort()
         )
         .range([
@@ -53,14 +53,17 @@ function main() {
         .selectAll("path")
         .data(topojson.feature(topology, topology.objects.counties).features)
         .join("path")
-        .attr("class", d => `county ${scale(metadata.get(d.id).graduated)}`)
+        .attr(
+          "class",
+          d => `county ${scale(metadata.get(d.id).bachelorsOrHigher)}`
+        )
         .attr("d", path)
         .attr("data-fips", d => d.id)
-        .attr("data-education", d => metadata.get(d.id).graduated)
+        .attr("data-education", d => metadata.get(d.id).bachelorsOrHigher)
         .on("mouseover", d =>
           d3
             .select("#tooltip")
-            .attr("data-education", metadata.get(d.id).graduated)
+            .attr("data-education", metadata.get(d.id).bachelorsOrHigher)
             .text(tooltip(metadata.get(d.id)))
         );
 
@@ -134,17 +137,15 @@ async function getMetadata(url) {
   return new Map(
     (
       await d3.json(metadataURL)
-    ).map(
-      ({ fips, state, area_name: county, bachelorsOrHigher: graduated }) => [
-        fips,
-        { state, county, graduated }
-      ]
-    )
+    ).map(({ fips, state, area_name, bachelorsOrHigher }) => [
+      fips,
+      { state, area_name, bachelorsOrHigher }
+    ])
   );
 }
 
-function tooltip({ state, county, graduated }) {
-  return `${county}, ${state}: ${graduated}%`;
+function tooltip({ state, area_name, bachelorsOrHigher }) {
+  return `${area_name}, ${state}: ${bachelorsOrHigher}%`;
 }
 
 if (process.env.NODE_ENV !== "test") {
