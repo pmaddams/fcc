@@ -55,15 +55,10 @@ function main() {
       .selectAll("circle")
       .data(data)
       .join("circle")
-      .attr("class", d => {
-        if (d.doping) {
-          return "dot doping";
-        } else {
-          return "dot";
-        }
-      })
+      .attr("class", "dot")
       .attr("data-xvalue", d => d.year)
       .attr("data-yvalue", d => d.time)
+      .attr("data-doping", d => d.doping)
       .attr("cx", d => scaleX(d.year))
       .attr("cy", d => scaleY(d.time))
       .attr("r", 1)
