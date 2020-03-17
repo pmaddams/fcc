@@ -11,6 +11,7 @@ function main() {
         software: req.headers["user-agent"]
       })
     )
+    .use(express.static("public"))
     .listen(process.env.PORT);
 }
 
