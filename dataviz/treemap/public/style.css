@@ -16,30 +16,30 @@ svg text {
   font-size: 10px;
 }
 
-svg .product-design {
-  fill: var(--red);
-}
-
-svg .tabletop-games {
-  fill: var(--orange);
-}
-
-svg .video-games {
-  fill: var(--green);
-}
-
-svg .technology {
-  fill: var(--blue);
-}
-
-svg .hardware {
-  fill: var(--purple);
-}
-
-svg .other {
+svg [data-category] {
   fill: var(--gray);
 }
 
-svg rect:hover {
+svg [data-category="Product Design"] {
+  fill: var(--red);
+}
+
+svg [data-category="Tabletop Games"] {
+  fill: var(--orange);
+}
+
+svg [data-category="Video Games"] {
+  fill: var(--green);
+}
+
+svg [data-category="Technology"] {
+  fill: var(--blue);
+}
+
+svg [data-category="Hardware"] {
+  fill: var(--purple);
+}
+
+svg .tile:hover {
   opacity: 50%;
 }

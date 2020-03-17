@@ -43,7 +43,7 @@ function main() {
 
     leaf
       .append("rect")
-      .attr("class", d => `tile ${category(d.data.category)}`)
+      .attr("class", "tile")
       .attr("width", d => d.x1 - d.x0)
       .attr("height", d => d.y1 - d.y0)
       .attr("data-name", d => d.data.name)
@@ -84,11 +84,12 @@ function main() {
     for (let i = 0; i < legendItems.length; i++) {
       legend
         .append("rect")
+        .attr("class", "legend-item")
         .attr("x", paddingWidth + i * legendItemWidth + legendPadding)
         .attr("y", legendPadding)
         .attr("width", legendRectSize)
         .attr("height", legendRectSize)
-        .attr("class", `legend-item ${toClassName(legendItems[i])}`);
+        .attr("data-category", legendItems[i]);
 
       legend
         .append("text")
@@ -110,26 +111,6 @@ function main() {
 
 function tooltip(d) {
   return `${d.data.name}: $${d.data.value} (${d.data.category})`;
-}
-
-function category(s) {
-  switch (s) {
-    case "Product Design":
-    case "Tabletop Games":
-    case "Video Games":
-    case "Technology":
-    case "Hardware":
-      return toClassName(s);
-    default:
-      return "other";
-  }
-}
-
-function toClassName(s) {
-  return s
-    .toLowerCase()
-    .split(" ")
-    .join("-");
 }
 
 if (process.env.NODE_ENV !== "test") {
