@@ -17,6 +17,7 @@ function main() {
             }
       );
     })
+    .use(express.static("public"))
     .listen(process.env.PORT);
 }
 
