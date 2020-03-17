@@ -30,3 +30,7 @@ svg .educated {
 svg .highly-educated {
   fill: var(--blue);
 }
+
+svg .county:hover {
+  stroke: white;
+}
