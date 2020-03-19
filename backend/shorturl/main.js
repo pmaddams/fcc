@@ -7,6 +7,9 @@ import sqlite3 from "sqlite3";
 
 function main() {
   const db = openDatabase(process.env.DB);
+  db.run(
+    "CREATE TABLE IF NOT EXISTS shorturl (id INTEGER PRIMARY KEY, url TEXT UNIQUE NOT NULL)"
+  );
 
   createServer()
     .use(express.urlencoded())
@@ -73,9 +76,6 @@ export function setURL(db, url, k) {
   }
   db.serialize(() =>
     db
-      .run(
-        "CREATE TABLE IF NOT EXISTS shorturl (id INTEGER PRIMARY KEY, url TEXT UNIQUE NOT NULL)"
-      )
       .run("INSERT OR IGNORE INTO shorturl (url) VALUES (?)", [url])
       .get("SELECT id FROM shorturl WHERE url = ?", [url], (err, row) =>
         k(null, row.id)
