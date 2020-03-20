@@ -8,13 +8,8 @@ function main() {
       const n = timestamp(req.params.date);
       return res.json(
         isNaN(n)
-          ? {
-              error: "Invalid Date"
-            }
-          : {
-              unix: n,
-              utc: new Date(n).toUTCString()
-            }
+          ? { error: "Invalid Date" }
+          : { unix: n, utc: new Date(n).toUTCString() }
       );
     })
     .use(express.static("public"))
