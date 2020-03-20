@@ -8,7 +8,7 @@ function main() {
     file: process.env.DB,
     init: [
       "CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY, username TEXT UNIQUE NOT NULL)",
-      "CREATE TABLE IF NOT EXISTS log (id INTEGER PRIMARY KEY, date TEXT NOT NULL, description TEXT NOT NULL, duration INTEGER NOT NULL)"
+      "CREATE TABLE IF NOT EXISTS log (id INTEGER PRIMARY KEY, date TEXT NOT NULL, description TEXT NOT NULL, duration INTEGER NOT NULL, userid INTEGER NOT NULL)"
     ]
   }).then(db =>
     createServer()
@@ -18,9 +18,9 @@ function main() {
           res.json(error ? { error } : { _id: id, username: req.body.username })
         )
       )
-      .get("", () => {})
-      .post("", () => {})
-      .get("", () => {})
+      .get("/api/exercise/users", (req, res) => {})
+      .post("/api/exercise/add", (req, res) => {})
+      .get("/api/exercise/log", (req, res) => {})
       .use(express.static("public"))
       .listen(process.env.PORT)
   );
@@ -89,6 +89,12 @@ export function validate(username) {
     throw new Error("invalid username");
   }
 }
+
+export function getUsers() {}
+
+export function addExercise() {}
+
+export function getLog() {}
 
 function log(...args) {
   if (process.env.NODE_ENV !== "test") {
