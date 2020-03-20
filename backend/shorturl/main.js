@@ -6,36 +6,43 @@ import helmet from "helmet";
 import sqlite3 from "sqlite3";
 
 function main() {
-  const db = openDatabase(process.env.DB);
-  db.run(
-    "CREATE TABLE IF NOT EXISTS shorturl (id INTEGER PRIMARY KEY, url TEXT UNIQUE NOT NULL)"
-  );
-
-  createServer()
-    .use(express.urlencoded())
-    .post("/api/shorturl/new", (req, res) =>
-      setURL(db, req.body.url, (error, id) =>
-        res.json(
-          error
-            ? { error }
-            : { original_url: req.body.url, short_url: encode(id) }
+  openDatabase({
+    file: process.env.DB,
+    init:
+      "CREATE TABLE IF NOT EXISTS shorturl (id INTEGER PRIMARY KEY, url TEXT UNIQUE NOT NULL)"
+  }).then(db =>
+    createServer()
+      .use(express.urlencoded())
+      .post("/api/shorturl/new", (req, res) =>
+        setURL(db, req.body.url, (error, id) =>
+          res.json(
+            error
+              ? { error }
+              : { original_url: req.body.url, short_url: encode(id) }
+          )
         )
       )
-    )
-    .get("/api/shorturl/:id", (req, res) =>
-      getURL(db, decode(req.params.id), (error, url) =>
-        error ? res.sendStatus(404) : res.redirect(301, url)
+      .get("/api/shorturl/:id", (req, res) =>
+        getURL(db, decode(req.params.id), (error, url) =>
+          error ? res.sendStatus(404) : res.redirect(301, url)
+        )
       )
-    )
-    .use(express.static("public"))
-    .listen(process.env.PORT);
+      .use(express.static("public"))
+      .listen(process.env.PORT)
+  );
 }
 
-export function openDatabase(file = ":memory:") {
+export function openDatabase({ file = ":memory:", init = [] } = {}) {
   sqlite3.verbose();
-  return new sqlite3.Database(file)
+  const db = new sqlite3.Database(file)
     .on("open", () => log("Opened database", file))
     .on("trace", log);
+
+  return new Promise((resolve, reject) =>
+    db.exec(Array.isArray(init) ? init.join("; ") : init, err =>
+      err ? reject(err) : resolve(db)
+    )
+  );
 }
 
 export function createServer() {
