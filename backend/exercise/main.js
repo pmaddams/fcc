@@ -13,6 +13,14 @@ function main() {
   }).then(db =>
     createServer()
       .use(express.urlencoded())
+      .post("/api/exercise/new-user", (req, res) =>
+        newUser(db, req.body.username, (error, id) =>
+          res.json(error ? { error } : { _id: id, username: req.body.username })
+        )
+      )
+      .get("", () => {})
+      .post("", () => {})
+      .get("", () => {})
       .use(express.static("public"))
       .listen(process.env.PORT)
   );
@@ -58,6 +66,28 @@ export function createServer() {
       }
     }
   );
+}
+
+export function newUser(db, username, k) {
+  try {
+    validate(username);
+  } catch (err) {
+    k(err.message);
+    return;
+  }
+  db.serialize(() =>
+    db
+      .run("INSERT OR IGNORE INTO users (username) VALUES (?)", [username])
+      .get("SELECT id FROM users WHERE username = ?", [username], (err, row) =>
+        k(null, row.id)
+      )
+  );
+}
+
+export function validate(username) {
+  if (!/^\w+$/.test(username)) {
+    throw new Error("invalid username");
+  }
 }
 
 function log(...args) {
