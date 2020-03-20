@@ -3,4 +3,36 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Exercise Tracker</title>
+  <form action="/api/exercise/new-user" method="post">
+    <fieldset>
+      <legend>New User</legend>
+      <label>Username: <input name="username" type="text" required/></label>
+      <input type="submit" />
+    </fieldset>
+  </form>
+  <form action="/api/exercise/users" method="get">
+    <fieldset>
+      <legend>Get Users</legend>
+      <input type="submit" />
+    </fieldset>
+  </form>
+  <form action="/api/exercise/add" method="post">
+    <fieldset>
+      <legend>Add Exercise</legend>
+      <label>User ID: <input name="userId" type="text" required/></label>
+      <label
+        >Description: <input name="description" type="text" required
+      /></label>
+      <label>Duration: <input name="duration" type="number" required/></label>
+      <label>Date: <input name="date" type="text"/></label>
+      <input type="submit" />
+    </fieldset>
+  </form>
+  <form action="/api/exercise/log" method="get">
+    <fieldset>
+      <legend>Get Log</legend>
+      <label>User ID: <input name="userId" type="text" required/></label>
+      <input type="submit" />
+    </fieldset>
+  </form>
 </html>

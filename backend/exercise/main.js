@@ -18,7 +18,11 @@ function main() {
           res.json(error ? { error } : { _id: id, username: req.body.username })
         )
       )
-      .get("/api/exercise/users", (req, res) => {})
+      .get("/api/exercise/users", (req, res) =>
+        getUsers(db, users =>
+          res.json(users.map(({ id, username }) => ({ _id: id, username })))
+        )
+      )
       .post("/api/exercise/add", (req, res) => {})
       .get("/api/exercise/log", (req, res) => {})
       .use(express.static("public"))
@@ -90,7 +94,9 @@ export function validate(username) {
   }
 }
 
-export function getUsers() {}
+export function getUsers(db, k) {
+  db.all("SELECT * FROM users", (err, rows) => k(rows));
+}
 
 export function addExercise() {}
 
