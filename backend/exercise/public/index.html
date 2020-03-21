@@ -19,19 +19,28 @@
   <form action="/api/exercise/add" method="post">
     <fieldset>
       <legend>Add Exercise</legend>
-      <label>User ID: <input name="userId" type="text" required/></label>
+      <label
+        >User ID: <input name="userId" type="number" min="1" required
+      /></label>
       <label
         >Description: <input name="description" type="text" required
       /></label>
-      <label>Duration: <input name="duration" type="number" required/></label>
-      <label>Date: <input name="date" type="text"/></label>
+      <label
+        >Duration: <input name="duration" type="number" min="1" required
+      /></label>
+      <label>Date: <input name="date" type="date"/></label>
       <input type="submit" />
     </fieldset>
   </form>
   <form action="/api/exercise/log" method="get">
     <fieldset>
       <legend>Get Log</legend>
-      <label>User ID: <input name="userId" type="text" required/></label>
+      <label
+        >User ID: <input name="userId" type="number" min="1" required
+      /></label>
+      <label>From: <input name="from" type="date"/></label>
+      <label>To: <input name="to" type="date"/></label>
+      <label>Count: <input name="count" type="number" min="1"/></label>
       <input type="submit" />
     </fieldset>
   </form>
