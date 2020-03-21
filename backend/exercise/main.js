@@ -26,9 +26,9 @@ function main() {
       .post("/api/exercise/add", (req, res) =>
         addExercise(
           db,
-          req.body.userId,
+          parseInt(req.body.userId),
           req.body.description,
-          req.body.duration,
+          parseInt(req.body.duration),
           req.body.date,
           (error, { username, id, description, duration, date }) =>
             res.json(
@@ -41,10 +41,10 @@ function main() {
       .get("/api/exercise/log", (req, res) =>
         getLog(
           db,
-          req.query.userId,
+          parseInt(req.query.userId),
           req.query.from,
           req.query.to,
-          req.query.count,
+          parseInt(req.query.count),
           (error, { username, id, log }) =>
             res.json(
               error ? { error } : { username, _id: id, log, count: log.length }
@@ -116,12 +116,6 @@ export function newUser(db, username, k) {
   );
 }
 
-export function validateUsername(s) {
-  if (!/^\w+$/.test(s)) {
-    throw new Error("invalid username");
-  }
-}
-
 export function getUsers(db, k) {
   db.all("SELECT * FROM users", (err, rows) => k(rows));
 }
@@ -150,6 +144,49 @@ export function addExercise(db, id, description, duration, date, k) {
   );
 }
 
+export function getLog(db, id, from, to, count, k) {
+  try {
+    if (from) {
+      validateDate(from);
+    }
+    if (to) {
+      validateDate(to);
+    }
+  } catch (err) {
+    k(err.message, {});
+    return;
+  }
+  let query = "SELECT date, description, duration FROM log WHERE userid = ?";
+  let params = [id];
+  if (from) {
+    query += " AND date >= ?";
+    params.push(from);
+  }
+  if (to) {
+    query += " AND date <= ?";
+    params.push(to);
+  }
+  query += " ORDER BY date";
+  if (count) {
+    query += " LIMIT ?";
+    params.push(count);
+  }
+  db.get(
+    "SELECT username FROM users WHERE id = ?",
+    [id],
+    (err, { username } = {}) =>
+      username
+        ? db.all(query, params, (err, log) => k(null, { username, id, log }))
+        : k("user not found", {})
+  );
+}
+
+export function validateUsername(s) {
+  if (!/^\w+$/.test(s)) {
+    throw new Error("invalid username");
+  }
+}
+
 export function validateDate(s) {
   if (
     !/\d{4}-\d{2}-\d{2}/.test(s) ||
@@ -157,21 +194,6 @@ export function validateDate(s) {
   ) {
     throw new Error("invalid date");
   }
-}
-
-export function getLog(db, id, from, to, count, k) {
-  db.get(
-    "SELECT username FROM users WHERE id = ?",
-    [id],
-    (err, { username } = {}) =>
-      username
-        ? db.all(
-            "SELECT date, description, duration FROM log WHERE userid = ?",
-            [id],
-            (err, log) => k(null, { username, id, log })
-          )
-        : k("user not found", {})
-  );
 }
 
 function log(...args) {
