@@ -84,8 +84,8 @@ export function setURL(db, url, k) {
   db.serialize(() =>
     db
       .run("INSERT OR IGNORE INTO shorturl (url) VALUES (?)", [url])
-      .get("SELECT id FROM shorturl WHERE url = ?", [url], (err, row) =>
-        k(null, row.id)
+      .get("SELECT id FROM shorturl WHERE url = ?", [url], (err, { id }) =>
+        k(null, id)
       )
   );
 }
