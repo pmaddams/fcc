@@ -38,7 +38,19 @@ function main() {
             )
         )
       )
-      .get("/api/exercise/log", (req, res) => {})
+      .get("/api/exercise/log", (req, res) =>
+        getLog(
+          db,
+          req.query.userId,
+          req.query.from,
+          req.query.to,
+          req.query.count,
+          (error, { username, id, log }) =>
+            res.json(
+              error ? { error } : { username, _id: id, log, count: log.length }
+            )
+        )
+      )
       .use(express.static("public"))
       .listen(process.env.PORT)
   );
@@ -147,7 +159,20 @@ export function validateDate(s) {
   }
 }
 
-export function getLog() {}
+export function getLog(db, id, from, to, count, k) {
+  db.get(
+    "SELECT username FROM users WHERE id = ?",
+    [id],
+    (err, { username } = {}) =>
+      username
+        ? db.all(
+            "SELECT date, description, duration FROM log WHERE userid = ?",
+            [id],
+            (err, log) => k(null, { username, id, log })
+          )
+        : k("user not found", {})
+  );
+}
 
 function log(...args) {
   if (process.env.NODE_ENV !== "test") {
